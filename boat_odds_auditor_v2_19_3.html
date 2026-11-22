@@ -1,0 +1,843 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>競艇オッズ監査 v2.19.3</title><style>
+:root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;background:#f2f6fb;color:#17263a}*{box-sizing:border-box}body{margin:0}main{max-width:1100px;margin:auto;padding:12px 12px 65px}header{background:#143354;color:white;border-radius:13px;padding:20px}h1{font-size:1.45rem;margin:0}h2{font-size:1.12rem;margin:0 0 12px}h3{font-size:1rem;margin:12px 0 6px}.sub{color:#63758a;font-size:.88rem}.panel{background:white;border:1px solid #d7e2ef;border-radius:12px;padding:16px;margin-top:13px}p{line-height:1.55}label{display:block;font-size:.92rem;font-weight:600}input,select,button{font:inherit}input[type=text],input[type=url],select{padding:10px;border-radius:8px;border:1px solid #afc0d0;background:white;max-width:100%;width:100%;margin-top:6px}input[type=file]{width:100%;font-size:.87rem;margin:9px 0}button{border:0;border-radius:9px;background:#1667b4;color:white;padding:12px 16px;cursor:pointer;font-weight:700;touch-action:manipulation}button.secondary{background:#e6eff9;color:#174269}button:disabled{opacity:.45;cursor:not-allowed}.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.filecard{border:1px dashed #91a8bf;border-radius:9px;padding:12px;min-width:0}.filecard b{display:block}.notice{background:#eff6ff;padding:10px;border-radius:8px;font-size:.88rem}.good{color:#087744}.warn{color:#a35b00}.bad{color:#bb2633}.view{position:relative;touch-action:none;max-width:100%;display:inline-block;background:#ddd;border:1px solid #ccd5e1}.view canvas{display:block;max-width:100%;width:auto;height:auto;touch-action:none}.cropbox{margin-top:12px;padding:10px;border:1px solid #e1e7ef;border-radius:9px}.cropinfo{font-size:.85rem;color:#55687e}.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stat{background:#f1f6fb;border-radius:9px;text-align:center;padding:10px 4px}.stat strong{display:block;font-size:1.25rem}.tablewrap{overflow:auto;max-height:530px;border:1px solid #dbe3eb;border-radius:8px;margin-top:10px}table{border-collapse:collapse;width:100%;font-size:.85rem}td,th{padding:7px;border-bottom:1px solid #e8edf2;white-space:nowrap;text-align:left}th{background:#edf4fd;position:sticky;top:0}td input[type=text]{min-width:78px;width:90px;margin:0;padding:7px}td input[type=checkbox]{width:20px;height:20px}.hidden{display:none}.preview{height:100px;max-width:100%;object-fit:contain;display:block;margin:6px 0}.export{width:100%;min-height:160px;border:1px solid #bac9d9;border-radius:8px;font-size:.8rem;padding:8px}.small{font-size:.8rem}.sample{width:175px;height:68px;object-fit:contain;border:1px solid #cdd6e2;background:#fff;display:block}.keycell{font-weight:700}.betstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.betstat{border:1px solid #d8e3f0;border-radius:8px;padding:9px;font-size:.83rem}.betstat b{display:block;font-size:1rem}.tinybtn{padding:6px 10px;font-size:.8rem;background:#e6eff9;color:#174269}@media(max-width:720px){.betstats{grid-template-columns:repeat(2,1fr)}}.needs{background:#fff5e6}.uncertain{background:#fff0e9}.reviewnote{font-size:.78rem;color:#975319;white-space:normal;max-width:200px}.reviewnote b{display:block}.cropbox canvas{cursor:crosshair}.queue-dialog{border:0;border-radius:14px;padding:18px;width:min(95vw,700px);max-height:90vh;overflow:auto;box-shadow:0 20px 65px #2236}.queue-dialog::backdrop{background:#14233c99}.queue-dialog input{width:100%;padding:11px;border:1px solid #aabbd0;border-radius:8px;font-size:1.1rem}.queue-dialog button{margin:4px 0}.queue-dialog .row{display:flex;gap:8px;flex-wrap:wrap}.queue-dialog .row>*{flex:1;min-width:160px}@media(max-width:720px){.meta{grid-template-columns:repeat(2,1fr)}.inputs{grid-template-columns:1fr}.statgrid{grid-template-columns:repeat(2,1fr)}main{padding:8px 8px 45px}.panel{padding:12px}h1{font-size:1.2rem}}
+
+.batch-item.editing{border-color:#1976bb;background:#edf7ff}.batch-item.prefilled{border-color:#5c9bba}.batch-dialog{border:0;border-radius:14px;padding:16px;width:min(96vw,1100px);max-height:94vh;overflow:auto;box-shadow:0 20px 65px #2236}.batch-dialog::backdrop{background:#14233cb3}.batch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.batch-item{border:1px solid #cbd7e4;border-radius:10px;padding:10px;background:white;min-width:0}.batch-item.needs{background:#fff8ea}.batch-item canvas{display:block;width:100%;height:95px;background:white;border:1px solid #dde5ee;object-fit:contain}.batch-item input[type=text]{width:100%;padding:8px;margin:5px 0;border:1px solid #b3c3d6;border-radius:6px}.batch-item .quickpick{padding:6px 8px;margin:3px 4px 3px 0;font-size:.76rem;background:#eaf1fb;color:#204d76}.batch-item .candidate-state{font-size:.76rem;border-radius:6px;padding:5px 7px;background:#e8f2ff;color:#16456c;margin:5px 0;line-height:1.45}.batch-item .candidate-state.unclear{background:#fff0df;color:#8c4d10}.batch-item input[readonly]{background:#f5f9ff;color:#17263a;opacity:1}.batch-item .candidate-warning{font-size:.76rem;color:#9a5414;min-height:2.2em}.batch-item .batchselect{display:flex;gap:8px;align-items:center;font-size:.83rem}.batch-item .batchselect input{width:20px;height:20px}.batch-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}.batch-toolbar>*{flex:1;min-width:125px}.batch-dialog button{padding:10px}.savebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.savebar button{flex:1;min-width:145px}.savebar p{flex-basis:100%}@media(max-width:750px){.batch-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:450px){.batch-grid{grid-template-columns:1fr}}
+
+.pick-panel{border:2px solid #a3c2e0;background:#f8fbff;border-radius:12px;padding:14px;margin:12px 0}.pick-panel textarea{width:100%;border:1px solid #aabbd2;border-radius:8px;padding:10px;font:inherit;margin:6px 0 10px}.pick-panel .row{margin:10px 0}
+
+.recalc-panel{background:#f6fbff;border:2px solid #5a96ce;border-radius:12px;padding:14px;margin:15px 0}.recalc-panel h3{margin:0 0 8px}.recalc-panel .row{margin:8px 0}.recalc-diff{padding:10px;border:1px solid #c6dbee;border-radius:8px;background:#fff;margin:8px 0;font-size:.86rem;white-space:pre-line}.batch-item .confirm-correct{display:flex;align-items:center;gap:8px;padding:7px;border:1px solid #cbdeda;border-radius:7px;background:#eefbf4;margin:7px 0;font-size:.83rem}.batch-item .confirm-correct input{width:21px;height:21px;flex:none}.batch-item .confirmed-note{font-size:.76rem;color:#096b4a}.recalc-panel textarea{font-variant-numeric:tabular-nums}.recalc-panel .notice{margin:12px 0}
+#batchMsg{position:sticky;bottom:0;z-index:10;display:none;margin:8px 0 0;padding:13px 15px;border-radius:10px;font-size:1rem;font-weight:700;line-height:1.45;box-shadow:0 -2px 10px #153c5833}
+#batchMsg.ok{display:block;color:#075538;background:#e0f6e9;border:2px solid #5daf83}
+#batchMsg.warn{display:block;color:#8d360d;background:#fff2df;border:2px solid #e2aa70}
+</style></head><body><main><header><h1>🚤 競艇オッズ監査 v2.19.3</h1><div style="opacity:.85;margin-top:5px">スクショ正本｜185通り｜確認・修正・再集計｜iPad / Galaxy / PC</div></header>
+<section class="panel"><h2>① 公式URLから基本情報</h2><label>BOAT RACE公式URL<input id="url" type="url" placeholder="https://www.boatrace.jp/owpc/pc/race/racelist?rno=5&jcd=21&hd=20261121"></label><p><button type="button" id="urlbtn" class="secondary">URLの情報を読み取る</button></p><p class="sub" id="urlmsg">URL中の jcd / rno / hd を解析します。ページ本文の取得はしません。</p><div class="meta"><label>開催場<input id="venue" type="text" readonly></label><label>レース<input id="race" type="text" readonly></label><label>開催日<input id="date" type="text" readonly></label><label>スクショ時刻<input id="time" type="text" placeholder="例 17:10"></label></div></section>
+<section class="panel"><h2>② スクショを3枚選択</h2><div class="notice">元画像は端末内で処理します。画像を外部サーバーへ送信する機能はありません。文字認識エンジンは初回にインターネットから読み込みます。</div><div class="inputs"><div class="filecard"><b>1枚目｜3連単（120）</b><input id="f3t" type="file" accept="image/*"><span id="n3t" class="sub">未選択</span></div><div class="filecard"><b>2枚目｜2連単＋2連複（45）</b><input id="f2" type="file" accept="image/*"><span id="n2" class="sub">未選択</span></div><div class="filecard"><b>3枚目｜3連複（20）</b><input id="f3f" type="file" accept="image/*"><span id="n3f" class="sub">未選択</span></div></div><p class="sub">Galaxyの全画面スクショは表の周りに余白があるため、下で表の範囲を囲んでね。iPadの表だけの画像も、枠が正しいか見てね。</p><div id="cropArea" class="hidden"><h3>表の範囲を選択（重要）</h3><p class="sub">各画像をタップ／ドラッグして、<b>6艇の見出し行の左上から、6艇目の列の右下（オッズ最下段）まで</b>を囲んでね。2枚目は上表と下表を個別に囲むよ。枠は後から何度でも引き直せる。</p><div id="cropSlots"></div></div><div class="row" style="margin-top:12px"><button id="run" type="button">3枚を解析する</button><button id="manual" type="button" class="secondary">空欄の監査表を開く</button><button id="resumeHome" type="button" class="secondary">前回の監査を再開</button></div><p id="log" role="status" aria-live="polite" class="sub">画像を3枚選択してね（iPadの今回の画像は初期枠を自動設定）</p></section>
+<section class="panel hidden" id="result"><h2>③ 全185通りを読み取り・監査 → ④ データ分析室へ引き継ぎ</h2><p id="auditStateDisplay" class="notice" role="status">⚪ 解析未実行・結果未確定。185件の空欄表示は解析成功を意味しません。</p><div id="stats" class="statgrid"></div><div id="betstats" class="betstats"></div>
+<div class="pick-panel" id="prePanel"><h3>📋 解析中・監査中の全オッズ資料（暫定）</h3>
+<p class="sub">185通りを自動解析しますが、全件を手動でチェックする必要はありません。読み取れた数値は「OCR参考・未照合」、欠落や食い違いは「未読・候補」として区別します。参考値は誤読の可能性があるため、データ分析室では参考値として扱い、確定オッズと混同しないでください。</p>
+<div class="row"><button id="preCopy" type="button">分析室へ全文コピー（185通り）</button><button id="preTxt" type="button" class="secondary">分析室用TXT保存</button><button id="preJson" type="button" class="secondary">JSON保存</button></div>
+<p id="preMsg" class="sub" role="status">全185件を保持し、元画像照合済み／OCR参考／未読・要確認を分けて出力します。元画像と桁・小数点の形が食い違うOCR記録は要確認として別記します。</p>
+<textarea id="preOutput" class="export" readonly aria-label="分析室引き継ぎデータ全文" style="min-height:125px" ></textarea>
+<p class="sub">この資料をデータ分析・要約室へ渡し、出走表・展示・気象などと統合してください。未照合値は参考候補であり、確定オッズではありません。分析室から再確認の依頼があった数字は、下の個別画像確認で照合できます。</p></div>
+<p class="sub">📌 v2.19.3：v2.18のOCR処理を維持。12件を画像と見比べたら、正しい倍率はチェック不要！間違いだけ修正にチェック。読めない倍率は保留にして、まとめて保存。自動の桁数判定が食い違っても目視確認を優先。再集計はOCRを再実行せず、保存された監査データだけを使います。</p><div class="savebar"><button type="button" class="secondary" id="resume">保存済みの監査を再開</button><button type="button" class="secondary" id="saveprogress">進捗を保存</button><button type="button" id="batchOpen">画像を12件ずつ確認（正解は操作不要／誤読だけ修正）</button><p class="sub" id="savemsg">この端末のブラウザに数値・確認状況を保存できます。画像自体は保存しません。</p></div>
+<section class="recalc-panel" id="recalcPanel">
+<h3>④ 保存データを再集計 → 分析室へ最新データを渡す</h3>
+<p class="sub">12件を画像で確認し、正しい倍率は何もせず、間違いだけ修正して<strong>まとめて保存</strong>したあと、再集計してね。OCRの再実行やスクショの再読み込みは行わず、端末内に保存した185件だけで集計します。</p>
+<div class="row"><button type="button" id="recalcButton">保存済みデータから再集計（OCRなし）</button><button type="button" id="recalcCopy" class="secondary" disabled>再集計185通りを全文コピー</button></div>
+<div class="row"><button type="button" id="recalcTxt" class="secondary" disabled>再集計TXTを保存</button><button type="button" id="recalcJson" class="secondary" disabled>再集計JSONを保存</button></div>
+<p id="recalcStatus" class="notice" role="status">未集計。修正・確認の保存後に「保存済みデータから再集計」を押してね。</p>
+<div id="recalcStats" class="statgrid"></div>
+<div id="recalcComparison" class="recalc-diff"></div>
+<p id="recalcCopyMsg" class="sub" role="status">再集計後に最新の185通りが表示されるよ。</p>
+<textarea id="recalcOutput" class="export" readonly aria-label="再集計済みのデータ分析室引き継ぎ全文" style="min-height:190px" placeholder="ここに再集計済みデータを表示"></textarea>
+<p class="sub">※ 12件一覧で「まとめて保存」を押した項目のうち、画像と見比べて正しいと判断した倍率だけ目視照合済みにします。桁数や小数点の自動判定は保存を妨げません。保存前のOCR候補・保留・画像がない項目は参考値のままです。</p>
+</section>
+<div class="row"><button type="button" id="retry" class="secondary">未読・保留を再認識する</button><button type="button" id="missing" class="secondary">未読・要確認を表示</button><button type="button" id="reviewnext">未照合を順番に確認</button></div><p class="sub" id="retrymsg">再認識は未読・保留だけを対象にします（数十秒〜数分かかることがあります）。</p><p class="sub">⚠ 4桁でOCR3回一致しても画像との一致は保証されません。確認ボタンで数字の末尾・小数点を拡大照合してからチェック。未読・候補・入力値は未照合です。</p><div class="row"><label>券種<select id="filter"><option value="all">すべて</option><option value="3t">3連単</option><option value="2t">2連単</option><option value="2f">2連複</option><option value="3f">3連複</option></select></label><label>確認<select id="status"><option value="all">すべて</option><option value="attention">未読・未照合</option><option value="missing">未読・不一致候補</option><option value="pending">画像未照合のみ</option></select></label></div><div class="tablewrap"><table><thead><tr><th>券種</th><th>組合せ</th><th>オッズ</th><th>判定・候補</th><th>画像で見る</th><th>画像確認</th></tr></thead><tbody id="rows"></tbody></table></div><h3>詳細：全185通りの監査表・従来出力</h3><div class="row"><button id="copy" type="button">全文コピー（185通り）</button><button id="txt" type="button" class="secondary">TXT保存</button><button id="json" type="button" class="secondary">JSON保存</button></div><p id="exportmsg" class="sub">コピーが禁止される画面では、下のテキストを長押ししてコピーできるよ。</p><div class="notice" id="exportwarning">未照合のオッズもOCR参考値として分析室へ渡せます。確定値として扱えるのは元画像を確認した値のみです。</div><textarea id="export" class="export" readonly aria-label="引き継ぎ用全文"></textarea></section><dialog id="batchDlg" class="batch-dialog"><h3>12件ずつ画像を見比べる</h3><p class="sub"><strong>操作はこれだけ：元画像と表示倍率を12件見比べる → 間違った倍率だけ「修正する」をチェックして直す → 下の「この12件を確認して保存」を押す。</strong> 数字が正しければ<strong>チェック不要</strong>。読めない場合は「保留」にチェック。候補が空欄・元画像を表示できない項目は保留します。<strong>桁数・小数点の自動推定は参考情報なので、画像と表示倍率が一致していればチェックなしで確定できます。</strong><strong>保存ボタンは表示中の倍率を目視確認したという意思表示</strong>です。保存していないページやOCRだけの倍率は照合済みにしません。</p><div class="batch-toolbar"><label>表示対象<select id="batchMode"><option value="suspect">要確認だけ（高信頼候補は後回し）</option><option value="priority">要確認を優先</option><option value="unverified">未照合すべて</option><option value="all">185件すべて</option></select></label><button type="button" id="batchPrev" class="secondary">前の12件</button><button type="button" id="batchNext" class="secondary">次の12件</button><button type="button" id="batchClose" class="secondary">閉じる</button></div><p id="batchPage" class="sub"></p><div id="batchGrid" class="batch-grid"></div><div class="batch-toolbar"><button type="button" id="batchConfirm">この12件を確認して保存（間違いだけチェック）</button><button type="button" id="batchSkip" class="secondary">次の12件へ</button></div><p id="batchMsg" class="sub" role="status" aria-live="assertive"></p></dialog><dialog id="queueDlg" class="queue-dialog"><h3 id="queueTitle">画像照合</h3><p class="sub" id="queueProgress"></p><canvas id="queueCanvas" width="720" height="224" style="width:100%;max-width:100%;border:1px solid #b9c9dc;background:#fff"></canvas><p id="queueHint" class="sub"></p><label>元画像と照合した倍率<input id="queueValue" type="text" inputmode="decimal" autocomplete="off" placeholder="例：20.3 または 1258"></label><div id="queueChoices" class="row" style="margin:9px 0"></div><div class="row"><button id="queueVerify" type="button">照合して確定・次へ</button><button id="queueSkip" class="secondary" type="button">保留して次へ</button></div><p class="sub">⚠ 元画像を目で確認できた場合だけ「確定」を押してください。候補を選んだだけでは確定しません。</p><button id="queueClose" class="secondary" type="button">閉じる</button></dialog><dialog id="previewdlg" style="border:0;border-radius:12px;padding:18px;max-width:min(95vw,600px);box-shadow:0 18px 60px #2335"><h3 id="previewtitle"></h3><p class="sub" id="previewcontext">元画像の行を確認</p><canvas id="previewcanvas" style="width:100%;max-width:420px;image-rendering:auto;border:1px solid #b9c9dc"></canvas><p class="sub">左の組合せと倍率を元のスクショで確認し、一覧の「画像確認」にチェックしてね。</p><button type="button" id="previewclose">閉じる</button></dialog>
+<footer class="sub" style="margin-top:18px">※ v2.19.3（データ分析・要約室引き継ぎ専用版）です。OCR結果の正しさは未保証です。自動OCRは誤読する場合があります。全件の正確さを保証するものではありません。スクショが正本、URLはレース識別用です。</footer></main><script>
+'use strict';
+const $=id=>document.getElementById(id);
+const VENUES=['','桐生','戸田','江戸川','平和島','多摩川','浜名湖','蒲郡','常滑','津','三国','びわこ','住之江','尼崎','鳴門','丸亀','児島','宮島','徳山','下関','若松','芦屋','福岡','唐津','大村'];
+const groups=[['3t','3連単'],['2t','2連単'],['2f','2連複'],['3f','3連複']];
+// Bounding rectangles include six colored headers and all odds cells.
+// 2732x2048: provided full-resolution iPad screenshots, 1030px: earlier cropped reference images.
+const defs=[
+ {id:'3t',file:'f3t',title:'3連単（120）',samples:[[2732,2048,[178,253,1229,923]],[1036,700,[17,47,1036,696]]],rows:20},
+ {id:'2t',file:'f2',title:'2連単（30）',samples:[[2732,2048,[178,398,1229,603]],[1036,517,[10,44,1030,243]]],rows:5},
+ {id:'2f',file:'f2',title:'2連複（15）',samples:[[2732,2048,[178,674,1229,879]],[1036,517,[10,314,1030,513]]],rows:5},
+ {id:'3f',file:'f3f',title:'3連複（20）',samples:[[2732,2048,[178,277,1229,637]],[1030,409,[17,54,1028,405]]],rows:10}
+];
+const images={},regions={},regionMethods={}; let data=[],isRunning=false;let savedCounts={};
+function readUrl(){try{const u=new URL($('url').value.trim());if(!/(^|\.)boatrace\.jp$/i.test(u.hostname))throw Error('公式boatrace.jpのURLではありません');const j=Number(u.searchParams.get('jcd')),r=Number(u.searchParams.get('rno')),h=u.searchParams.get('hd');if(!VENUES[j]||!Number.isInteger(r)||r<1||r>12||!/^\d{8}$/.test(h||''))throw Error('URLに jcd・rno・hd が必要です');const y=Number(h.slice(0,4)),m=Number(h.slice(4,6)),d=Number(h.slice(6,8)),dt=new Date(Date.UTC(y,m-1,d));if(dt.getUTCFullYear()!==y||dt.getUTCMonth()+1!==m||dt.getUTCDate()!==d)throw Error('開催日が不正です');$('venue').value=VENUES[j];$('race').value=r+'R';$('date').value=h.slice(0,4)+'-'+h.slice(4,6)+'-'+h.slice(6,8);$('urlmsg').textContent='✅ '+VENUES[j]+' '+r+'R '+$('date').value+'（URLの文字列より判定）';$('urlmsg').className='good small';return true}catch(e){$('venue').value=$('race').value=$('date').value='';$('urlmsg').textContent='⚠ '+e.message;$('urlmsg').className='warn small';return false}}
+$('urlbtn').onclick=readUrl;$('url').onchange=readUrl;
+function makeData(){let out=[];
+ for(let i=1;i<=6;i++)for(let j=1;j<=6;j++)if(j!==i)for(let k=1;k<=6;k++)if(k!==i&&k!==j){let priorJ=0,priorK=0;for(let a=1;a<j;a++)if(a!==i)priorJ++;for(let a=1;a<k;a++)if(a!==i&&a!==j)priorK++;out.push({id:'3t',key:`${i}-${j}-${k}`,col:i-1,row:4*priorJ+priorK,odds:'',checked:false,confidence:0,candidates:[],review:'未読'})}
+ for(let i=1;i<=6;i++)for(let j=1;j<=6;j++)if(j!==i)out.push({id:'2t',key:`${i}-${j}`,col:i-1,row:j<i?j-1:j-2,odds:'',checked:false,confidence:0,candidates:[],review:'未読'});
+ for(let i=1;i<=5;i++)for(let j=i+1;j<=6;j++)out.push({id:'2f',key:`${i}=${j}`,col:i-1,row:j-2,odds:'',checked:false,confidence:0,candidates:[],review:'未読'});
+ for(let i=1;i<=4;i++)for(let j=i+1;j<=5;j++)for(let k=j+1;k<=6;k++){let row=0;for(let a=2;a<j;a++)row+=6-a;row+=k-j-1;out.push({id:'3f',key:`${i}=${j}=${k}`,col:i-1,row,odds:'',checked:false,confidence:0,candidates:[],review:'未読'})}
+ return out;
+}
+function valid(v){return /^\d+(\.\d+)?$/.test(String(v))&&Number(v)>=1} // BOAT RACE odds are >=1
+function loadImage(file){return new Promise((resolve,reject)=>{const im=new Image(),uri=URL.createObjectURL(file);im.onload=()=>{URL.revokeObjectURL(uri);resolve(im)};im.onerror=()=>{URL.revokeObjectURL(uri);reject(Error('画像を開けません'))};im.src=uri})}
+function defaultRect(def,img){for(const [w,h,b] of def.samples)if(Math.abs(img.width/w-1)<.022&&Math.abs(img.height/h-1)<.022)return b.map((v,i)=>Math.round(v*(i%2===0?img.width/w:img.height/h)));return [0,0,img.width,img.height]}
+// Color-header detector: finds adjacent red/blue/yellow/green header blocks (boats 3–6).
+// This runs entirely within the user's browser. It is deliberately conservative.
+function detectTables(img){
+ const ratio=Math.min(1,1100/img.width),w=Math.round(img.width*ratio),h=Math.round(img.height*ratio);
+ const cv=document.createElement('canvas');cv.width=w;cv.height=h;const cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(img,0,0,w,h);
+ const pixels=cx.getImageData(0,0,w,h).data;
+ function rgb(x,y){const k=(Math.floor(y)*w+Math.floor(x))*4;return [pixels[k],pixels[k+1],pixels[k+2]]}
+ function color(x,y){const [r,g,b]=rgb(x,y);if(r>155&&r>g*1.42&&r>b*1.25)return 'R';if(b>100&&b>r*1.28&&b>g*1.04)return 'B';if(r>155&&g>145&&b<145&&r>b*1.35)return 'Y';if(g>91&&g>r*1.17&&g>b*1.12)return 'G';return '-'}
+ const found=[];let last=-999;
+ for(let y=15;y<h-25;y+=3){
+   const runs=[];let lastColor='-',st=0;
+   for(let x=4;x<w-4;x+=2){let c=color(x,y);if(c!==lastColor){if(lastColor!=='-'&&x-st>8)runs.push({c:lastColor,x0:st,x1:x});st=x;lastColor=c}}
+   for(let i=0;i<runs.length-3;i++){
+     const a=runs.slice(i,i+4);
+     if(a.map(z=>z.c).join('')!=='RBYG')continue;
+     const widths=a.map(z=>z.x1-z.x0),avg=widths.reduce((n,v)=>n+v,0)/4;
+     if(avg<17||avg>350||Math.max(...widths)/Math.min(...widths)>1.5)continue;
+     if(a.some((z,j)=>j>0&&z.x0-a[j-1].x1>5))continue;
+     const col=avg, x0=a[0].x0-2*col, x1=a[3].x1;
+     if(x0<0||x1>w||x1-x0<140||y-last<16)continue;
+     // Exclude colorful non-table elements by requiring wide, uniform color bands.
+     const mids=a.map(z=>(z.x0+z.x1)/2);
+     const testY=Math.min(h-2,y+Math.max(4,Math.round(col*.14)));
+     if(mids.some((m,j)=>color(m,testY)!=='RBYG'[j]))continue;
+     let top=y;while(top>0&&color(mids[0],top-1)==='R')top--;
+     let bottom=y;while(bottom+1<h&&color(mids[0],bottom+1)==='R')bottom++;
+     if(bottom-top<5)continue;
+     found.push({x0:x0/ratio,x1:x1/ratio,y0:top/ratio,head:(bottom-top+1)/ratio,col:col/ratio});last=bottom+8;break;
+   }
+ }
+ return found.sort((a,b)=>a.y0-b.y0);
+}
+function detectAllForFile(file){const img=images[file];if(!img)return;const hits=detectTables(img),targets=defs.filter(d=>d.file===file);
+ for(let i=0;i<targets.length;i++){
+  const d=targets[i],t=hits[i];let rect,method;
+  if(t){const r=t.head/50;const rowheight=t.col*31/175;const tableBottom=t.y0+t.head+d.rows*rowheight;
+   rect=[Math.max(0,Math.round(t.x0)),Math.round(t.y0),Math.min(img.width,Math.round(t.x1)),Math.min(img.height,Math.round(tableBottom))];method='色付き見出しから自動検出';
+  }else{const key='boatOdds:v17:'+d.id;try{const old=JSON.parse(localStorage.getItem(key));if(old&&old.length===4&&old.every(v=>Number.isFinite(v)&&v>=0&&v<=1)){rect=old.map((v,j)=>Math.round(v*(j%2?img.height:img.width)));method='保存した枠（自動検出できず）';}}catch(e){}
+   if(!rect){rect=defaultRect(d,img);method=rect[0]===0&&rect[1]===0?'画像全体（枠の確認が必要）':'既知の画像サイズに合わせた初期枠';}
+  }
+  regions[d.id]=rect;regionMethods[d.id]=method;
+ }
+}
+function saveRegion(d){const img=images[d.file],b=regions[d.id];if(!img||!b)return false;try{localStorage.setItem('boatOdds:v17:'+d.id,JSON.stringify(b.map((v,j)=>v/(j%2?img.height:img.width))));return true}catch(e){return false}}
+function validateRect(d){const img=images[d.file],b=regions[d.id];if(!img||!b)return false;const width=b[2]-b[0],height=b[3]-b[1];return width>=180&&height>=80&&height/width>.10&&height/width<1.5&&b[0]>=0&&b[1]>=0&&b[2]<=img.width&&b[3]<=img.height;}
+async function fileChanged(id){let f=$(id).files[0];$(id==='f3t'?'n3t':id==='f2'?'n2':'n3f').textContent=f?f.name:'未選択';if(!f){delete images[id];createCrops();return}try{images[id]=await loadImage(f);detectAllForFile(id);createCrops();$('log').textContent='✅ 枠の自動検出を試しました。青枠が表の見出しから最下段まで一致しているか確認してね。検出できない場合は保存済み設定を利用します。'}catch(e){$('log').textContent='⚠ '+e.message}}
+for(const id of ['f3t','f2','f3f'])$(id).onchange=()=>fileChanged(id);
+function createCrops(){const root=$('cropSlots');root.replaceChildren();$('cropArea').classList.toggle('hidden',!Object.keys(images).length);for(const def of defs){const img=images[def.file];if(!img)continue;const wrap=document.createElement('div');wrap.className='cropbox';wrap.innerHTML='<b></b><p class="cropinfo">自動検出した青枠を確認。外れている時だけドラッグで調整。調整内容はこの端末に保存できます。</p><div class="view"><canvas></canvas></div><p class="cropinfo"></p><button type="button" class="secondary">画像全体を選択</button> <button type="button" class="secondary">自動再検出</button> <button type="button" class="secondary">この枠を保存</button>';wrap.querySelector('b').textContent=def.title;root.append(wrap);const canvas=wrap.querySelector('canvas'),ctx=canvas.getContext('2d'),info=wrap.querySelectorAll('p')[1];const scale=Math.min(1,Math.min(860,window.innerWidth-62)/img.width);canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);let origin=null;
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);let [x0,y0,x1,y1]=regions[def.id];ctx.fillStyle='rgba(0,147,255,.09)';ctx.fillRect(x0*scale,y0*scale,(x1-x0)*scale,(y1-y0)*scale);ctx.strokeStyle='#00a7ff';ctx.lineWidth=3;ctx.strokeRect(x0*scale,y0*scale,(x1-x0)*scale,(y1-y0)*scale);info.textContent=`${regionMethods[def.id]||'手動'}：${Math.round(x1-x0)} × ${Math.round(y1-y0)} px／見出し・全列・最下段を確認`;}
+function pos(e){const rc=canvas.getBoundingClientRect();return [Math.max(0,Math.min(img.width,(e.clientX-rc.left)*img.width/rc.width)),Math.max(0,Math.min(img.height,(e.clientY-rc.top)*img.height/rc.height))]}
+canvas.onpointerdown=e=>{origin=pos(e);canvas.setPointerCapture(e.pointerId)};canvas.onpointermove=e=>{if(!origin)return;const p=pos(e);regions[def.id]=[Math.min(origin[0],p[0]),Math.min(origin[1],p[1]),Math.max(origin[0],p[0]),Math.max(origin[1],p[1])];regionMethods[def.id]='手動調整（未保存）';draw()};canvas.onpointerup=()=>origin=null;canvas.onpointercancel=()=>origin=null;wrap.querySelectorAll('button')[0].onclick=()=>{regions[def.id]=[0,0,img.width,img.height];draw()};wrap.querySelectorAll('button')[1].onclick=()=>{detectAllForFile(def.file);createCrops()};wrap.querySelectorAll('button')[2].onclick=()=>{if(!validateRect(def)){info.textContent='⚠ 枠の範囲を再確認してね';return}info.textContent=saveRegion(def)?'✅ この端末に枠を保存しました。次回、自動検出に失敗したとき利用します。':'⚠ ブラウザが位置の保存を許可しませんでした';};draw()}}
+// Each table has six equal-width columns. Header height is ~50px and each odds row ~31px in the supplied screenshots.
+// Place each crop in a padded single-number cell (no adjacent numbers/colored labels).
+function oddsCell(d){const def=defs.find(x=>x.id===d.id),img=def&&images[def.file],region=regions[d.id];if(!img||!region||region.length!==4)return null;const x=region[0],y=region[1],w=region[2]-x,h=region[3]-y;
+ if(w<=0||h<=0)return null;
+ const cw=w/6, head=h*50/(50+31*def.rows),rh=(h-head)/def.rows;
+ // Lower half of each column is odds; leave margin to avoid the colored row labels.
+ const sx=x+(d.col+.365)*cw,sy=y+head+d.row*rh+.00*rh,sw=.625*cw,sh=1.00*rh;
+ if(sx<0||sy<0||sx+sw>img.width+1||sy+sh>img.height+1)return null;
+ const result=document.createElement('canvas');result.width=360;result.height=112;const c=result.getContext('2d');c.fillStyle='white';c.fillRect(0,0,360,112);c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';c.drawImage(img,sx,sy,sw,sh,12,8,336,96);return result;
+}
+// Avoid segmenting a large 185-item montage based on global Tesseract word order.
+// One OCR pass per bet type, individually padded crops inside a 4-column grid.
+const CW=208,CH=76,NC=4;
+function montage(items,variant=0){
+ const cv=document.createElement('canvas');cv.width=CW*NC;cv.height=CH*Math.ceil(items.length/NC);const c=cv.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,cv.width,cv.height);
+ items.forEach((item,n)=>{const tile=oddsCell(item);if(!tile)return;const mx=(n%NC)*CW,my=Math.floor(n/NC)*CH;
+  const source=document.createElement('canvas');source.width=tile.width;source.height=tile.height;const t=source.getContext('2d');t.drawImage(tile,0,0);
+  if(variant===1){t.filter='grayscale(1) contrast(135%)';t.drawImage(tile,0,0)}
+  if(variant===2){let p=t.getImageData(0,0,source.width,source.height);for(let k=0;k<p.data.length;k+=4){const r=p.data[k],g=p.data[k+1],b=p.data[k+2];const grey=.299*r+.587*g+.114*b;const v=grey<170?0:255;p.data[k]=p.data[k+1]=p.data[k+2]=v;}t.putImageData(p,0,0)}
+  if(variant===3){t.filter='grayscale(1) contrast(165%)';t.drawImage(tile,0,0)}
+  if(variant===4){let p=t.getImageData(0,0,source.width,source.height);for(let k=0;k<p.data.length;k+=4){const grey=.299*p.data[k]+.587*p.data[k+1]+.114*p.data[k+2];const v=grey<202?0:255;p.data[k]=p.data[k+1]=p.data[k+2]=v;}t.putImageData(p,0,0)}
+  c.drawImage(source,mx+7,my+4,CW-14,CH-8);
+ });return cv
+}
+function parseOdds(text){let raw=String(text||'').trim().replace(/\s+/g,'').replace(/,/g,'').replace(/[Oo]/g,'0').replace(/[lI|]/g,'1').replace(/[^0-9.]/g,'');if(!/^\d{1,5}(\.\d)?$/.test(raw)||!valid(raw))return '';return raw}
+// Return candidates rather than writing OCR results directly to the audit ledger.
+function candidates(result,items){const words=result.data?.words||[];return items.map((item,n)=>{const x=(n%NC)*CW,y=Math.floor(n/NC)*CH;const ws=words.filter(t=>t.bbox&&t.bbox.x0>=x+5&&t.bbox.x1<x+CW-5&&t.bbox.y0>=y+2&&t.bbox.y1<y+CH-2).sort((a,b)=>a.bbox.x0-b.bbox.x0);return {value:parseOdds(ws.map(t=>t.text).join('')),confidence:ws.length?Math.min(...ws.map(t=>Number(t.confidence)||0)):0}})}
+function decimalHints(v){if(!v||v.includes('.')||!/^[0-9]{2,5}$/.test(v))return [];return [v.slice(0,-1)+'.'+v.slice(-1)];}
+function combineCandidates(items,a,b,c,onlyEmpty=false){let accepted=0;items.forEach((d,i)=>{
+ if(onlyEmpty&&valid(d.odds))return;
+ const guesses=[a[i],b[i],c[i]].filter(Boolean),seen=guesses.map(x=>x.value).filter(Boolean);
+ d.candidates=seen;d.decimalHints=[...new Set(seen.flatMap(decimalHints))];d.checked=false;d.autoFour=false;
+ const dotted=seen.filter(x=>x.includes('.'));
+ const groupsByValue={};for(const g of guesses)if(g.value)(groupsByValue[g.value]??=[]).push(g.confidence);
+ const ranked=Object.entries(groupsByValue).sort((x,y)=>y[1].length-x[1].length||Math.min(...y[1])-Math.min(...x[1]));
+ const winner=ranked[0],identical=winner&&winner[1].length===3;
+ const rawDigits=seen.map(v=>v.replace('.',''));
+ const partial=rawDigits.some(x=>rawDigits.some(y=>x!==y&&(x.includes(y)||y.includes(x))));
+ d.confidence=winner?Math.min(...winner[1]):0;
+ // A short candidate may be missing a leading digit; never use agreement by itself to repair it.
+ if(identical&&winner[0].includes('.')&&d.confidence>=50&&!partial){d.odds=winner[0];d.review='OCR3条件一致・未照合';accepted++}
+ else{d.odds='';d.review=!seen.length?'未読':partial?'桁欠け疑い・要確認':!dotted.length?'小数点不明・要確認':'OCR不一致・要確認'}
+ });return accepted}
+
+
+// v2.5: Local glyph segmentation on the original cell image. This is advisory only.
+// Detect isolated dark components by their horizontal projection; a small low component is a possible decimal dot.
+function segmentCellGlyphs(d){
+ const tile=oddsCell(d);if(!tile)return null;
+ const w=tile.width,h=tile.height,px=tile.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h).data;
+ const xL=15,xR=w-36,yT=13,yB=h-13,cols=[];
+ for(let x=xL;x<xR;x++){
+  let count=0,top=h,bottom=0;
+  for(let y=yT;y<yB;y++){
+   const k=(y*w+x)*4,r=px[k],g=px[k+1],b=px[k+2];
+   if((.299*r+.587*g+.114*b)<155 && Math.max(r,g,b)-Math.min(r,g,b)<48){count++;top=Math.min(top,y);bottom=Math.max(bottom,y)}
+  }
+  cols.push({x,n:count,top,bottom});
+ }
+ const parts=[];let start=-1,last=-1;
+ for(let i=0;i<cols.length;i++){
+  if(cols[i].n>=2){if(start<0)start=i;last=i}
+  else if(start>=0&&i-last>2){parts.push([start,last]);start=-1}
+ }
+ if(start>=0)parts.push([start,last]);
+ const gl=[];
+ for(const [a,b] of parts){const slice=cols.slice(a,b+1).filter(q=>q.n>0);if(!slice.length)continue;
+  const left=cols[a].x,right=cols[b].x,top=Math.min(...slice.map(q=>q.top)),bottom=Math.max(...slice.map(q=>q.bottom));
+  const width=right-left+1,height=bottom-top+1;
+  if(width<2||height<2)continue;
+  gl.push({left,right,top,bottom,width,height});
+ }
+ const tall=gl.filter(g=>g.height>=22&&g.width>=5);if(tall.length<1||tall.length>5)return null;
+ const baseline=Math.max(...tall.map(g=>g.bottom));
+ const dotCandidates=gl.filter(g=>g.height<=17&&g.width<=15&&g.bottom>=baseline-18&&g.top>Math.min(...tall.map(z=>z.top))+15);
+ const dot=dotCandidates.length===1?dotCandidates[0]:null;
+ const digits=gl.filter(g=>g!==dot&&g.height>=18&&g.width>=5);
+ if(digits.length<1||digits.length>5||gl.some(g=>g!==dot&&!digits.includes(g)))return null;
+ const dotBefore=dot?digits.filter(g=>g.left<dot.left).length:-1;
+ if(dot&&(!dotBefore||dotBefore===digits.length))return null;
+ return {tile,digits,dotBefore};
+}
+const GCW=104,GCH=102,GNC=4;
+function glyphMontage(parts){
+ const cv=document.createElement('canvas');cv.width=GCW*GNC;cv.height=GCH*Math.ceil(parts.length/GNC);const ctx=cv.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,cv.width,cv.height);
+ parts.forEach((p,i)=>{const g=p.g,src=p.seg.tile,cx=i%GNC*GCW,cy=Math.floor(i/GNC)*GCH;
+  const pad=4,sx=Math.max(0,g.left-pad),sy=Math.max(0,g.top-pad),sw=Math.min(src.width-sx,g.width+pad*2),sh=Math.min(src.height-sy,g.height+pad*2);
+  const scale=Math.min(72/sw,76/sh);const dw=sw*scale,dh=sh*scale;
+  ctx.imageSmoothingEnabled=true;ctx.drawImage(src,sx,sy,sw,sh,cx+(GCW-dw)/2,cy+(GCH-dh)/2,dw,dh);
+ });return cv
+}
+function glyphResults(result,parts){const words=result.data?.words||[];return parts.map((p,i)=>{const x=i%GNC*GCW,y=Math.floor(i/GNC)*GCH;
+ const values=words.filter(z=>z.bbox&&z.bbox.x0>=x+2&&z.bbox.x1<=x+GCW-2&&z.bbox.y0>=y+2&&z.bbox.y1<=y+GCH-2).map(z=>z.text).join('').replace(/[^0-9]/g,'');
+ return /^[0-9]$/.test(values)?values:'';
+})}
+async function supplementaryGlyphOCR(worker,items,logPrefix){
+ const segs=items.map(d=>({d,seg:segmentCellGlyphs(d)})).filter(x=>x.seg);
+ const parts=[];for(const o of segs)for(let n=0;n<o.seg.digits.length;n++)parts.push({...o,g:o.seg.digits[n],index:n});
+ if(!parts.length)return 0;
+ const read=new Map();let batches=0;
+ for(let offset=0;offset<parts.length;offset+=72){const section=parts.slice(offset,offset+72);
+  $('log').textContent=`${logPrefix}：1文字ずつ補助解析 ${Math.min(offset+section.length,parts.length)}/${parts.length}文字`;
+  const res=await worker.recognize(glyphMontage(section));const chars=glyphResults(res,section);
+  section.forEach((p,i)=>{const id=p.d.id+'|'+p.d.key;if(!read.has(id))read.set(id,[]);read.get(id)[p.index]=chars[i]});batches++;
+ }
+ let proposed=0;
+ for(const o of segs){const id=o.d.id+'|'+o.d.key,chars=read.get(id)||[];
+  if(chars.length!==o.seg.digits.length||chars.some(v=>!v))continue;
+  const digits=chars.join('');const dot=o.seg.dotBefore;
+  const guess=dot>0?digits.slice(0,dot)+'.'+digits.slice(dot):digits;
+  if(!valid(guess))continue;
+  o.d.glyphHint=guess;o.d.dotFound=dot>0;
+  if(!o.d.candidates.includes(guess))o.d.candidates.push(guess);
+  if(!valid(o.d.odds)){o.d.review=(o.d.review||'未読')+'／1文字補助候補あり（未確認）';proposed++}
+ }
+ return proposed;
+}
+
+
+// v2.5: BOAT RACE odds-specific, image-local template matching (no paid API).
+// Reference glyphs are harvested only from high-confidence dotted three-pass OCR cells.
+// The classification is advisory and never sets d.checked or overwrites d.odds.
+function oddsGlyphVector(seg,g){
+ const cv=document.createElement('canvas');cv.width=22;cv.height=34;
+ const ctx=cv.getContext('2d',{willReadFrequently:true});ctx.fillStyle='#fff';ctx.fillRect(0,0,22,34);
+ const t=seg.tile,pad=2,sx=Math.max(0,g.left-pad),sy=Math.max(0,g.top-pad);
+ const sw=Math.min(t.width-sx,g.right+pad-sx+1),sh=Math.min(t.height-sy,g.bottom+pad-sy+1);
+ if(sw<=0||sh<=0)return null;
+ ctx.drawImage(t,sx,sy,sw,sh,2,2,18,30);
+ const pixels=ctx.getImageData(0,0,22,34).data,vec=[];
+ for(let y=2;y<32;y++)for(let x=2;x<20;x++){
+  const i=(y*22+x)*4,grey=.299*pixels[i]+.587*pixels[i+1]+.114*pixels[i+2];
+  vec.push(Math.max(0,Math.min(1,(212-grey)/145)));
+ }
+ return vec;
+}
+function oddsGlyphDistance(a,b){if(!a||!b||a.length!==b.length)return 1;
+ let err=0;for(let i=0;i<a.length;i++)err+=Math.abs(a[i]-b[i]);return err/a.length;
+}
+function oddsLocalTraining(rows){
+ const templates=new Map();for(let i=0;i<10;i++)templates.set(String(i),[]);
+ for(const d of rows){
+  if(!valid(d.odds)||!/^\d{1,4}\.\d$/.test(d.odds)||!d.review?.includes('OCR3条件一致')||d.confidence<60)continue;
+  const seg=segmentCellGlyphs(d),chars=d.odds.replace('.','');
+  if(!seg||seg.digits.length!==chars.length||seg.dotBefore!==d.odds.indexOf('.'))continue;
+  for(let i=0;i<chars.length;i++){
+   const v=oddsGlyphVector(seg,seg.digits[i]);if(v)templates.get(chars[i]).push({v,key:d.id+'|'+d.key});
+  }
+ }
+ return templates;
+}
+function oddsShapeCandidate(d,templates){
+ const seg=segmentCellGlyphs(d);if(!seg)return {candidate:'',reason:'数字の分割ができません'};
+ const supported=[...templates].filter(([k,v])=>v.length>=2).map(([k])=>k);
+ if(supported.length<7)return {candidate:'',reason:`見本不足（数字${supported.length}/10種）`};
+ let chars='',worst=0,margin=1,details=[];
+ for(const g of seg.digits){
+  const vec=oddsGlyphVector(seg,g),r=[];
+  for(const [digit,refs] of templates){
+   const ds=refs.map(t=>oddsGlyphDistance(vec,t.v)).sort((a,b)=>a-b);
+   if(ds.length>=2)r.push([digit,(ds[0]+ds[1])/2]);
+  }
+  r.sort((a,b)=>a[1]-b[1]);if(r.length<2)return {candidate:'',reason:'見本不足'};
+  const best=r[0],second=r[1];worst=Math.max(worst,best[1]);margin=Math.min(margin,second[1]-best[1]);
+  chars+=best[0];details.push(best[0]+':'+best[1].toFixed(2));
+ }
+ const dot=seg.dotBefore;
+ const candidate=dot>0?chars.slice(0,dot)+'.'+chars.slice(dot):chars;
+ if(!valid(candidate))return {candidate:'',reason:'倍率形式が不正'};
+ // Reject weak shape matches. Even accepted candidates are advisory only.
+ if(worst>0.30||margin<0.018)return {candidate:'',reason:'形状が曖昧（保留）',weak:candidate};
+ return {candidate,reason:'画像内の数字見本と照合（未確認）',worst,margin};
+}
+function oddsShapeReview(rows){
+ const templates=oddsLocalTraining(rows);
+ let proposals=0;for(const d of rows){
+  if(d.checked)continue;
+  const r=oddsShapeCandidate(d,templates);
+  d.rawOcrCandidates=Array.isArray(d.rawOcrCandidates)?d.rawOcrCandidates:(d.candidates||[]).slice(0,3);
+  d.shapeHint=r.candidate||'';d.shapeNote=r.reason;
+  if(r.candidate){
+   if(!d.candidates.includes(r.candidate))d.candidates.push(r.candidate);
+   if(!valid(d.odds)){d.review=(d.review||'未読')+'／専用形状候補あり（未照合）';proposals++}
+  }
+ }
+ return {proposals,training:[...templates.values()].reduce((n,a)=>n+a.length,0)};
+}
+
+// v2.19.3: 4-digit odds high-confidence candidate. Three preprocessing runs use
+// the SAME crop, so agreement is useful but not independent image verification.
+// No guesswork from decimal placement; no promotion if ANY OCR run disagrees.
+function isPlainFour(v){return /^[1-9][0-9]{3}$/.test(String(v||''))}
+function reviewFourDigitAuto(rows){
+ let accepted=0;
+ for(const d of rows){
+   d.autoFour=false;
+   if(d.checked || (d.review||'').includes('手動入力'))continue;
+   const reads=(d.rawOcrCandidates&&d.rawOcrCandidates.length?d.rawOcrCandidates:d.candidates||[]).slice(0,3).map(String);
+   const first=reads[0]||'';
+   if(reads.length!==3 || !isPlainFour(first) || !reads.every(v=>v===first))continue;
+   // Protect against a competing OCR value in later candidates, when present.
+   // Dedicated shape recognition can be unreliable: its disagreement is exposed,
+   // but does not erase three identical four-digit reads.
+   d.odds=first;
+   d.autoFour=true;
+   const shape=String(d.shapeHint||'').trim();
+   d.review='4桁OCR高信頼候補（3条件一致・目視未照合）'+(shape&&shape!==first?'／専用形状認識と不一致（要注意）':'');
+   accepted++;
+ }
+ return accepted;
+}
+// v2.19.3: targeted decimal/omitted-glyph retry AFTER the proven v2.14 passes.
+// It cannot replace a previously accepted odds value, nor silently certify OCR as image-verified.
+async function retryMissingDigitShapes(worker,rows){
+ const pending=rows.filter(d=>!valid(d.odds) && !d.checked && d.candidates?.length);
+ let filled=0,proposed=0;
+ for(let begin=0;begin<pending.length;begin+=24){
+  const batch=pending.slice(begin,begin+24);
+  $('log').textContent=`小数点・桁欠けの補助検査 ${Math.min(begin+batch.length,pending.length)}/${pending.length}件…`;
+  const r1=candidates(await worker.recognize(montage(batch,3)),batch);
+  const r2=candidates(await worker.recognize(montage(batch,4)),batch);
+  batch.forEach((d,i)=>{
+   const values=[r1[i]?.value||'',r2[i]?.value||''].filter(Boolean);
+   if(!values.length)return;
+   const original=Array.isArray(d.rawOcrCandidates)?d.rawOcrCandidates.slice():d.candidates.slice(0,3);
+   const originalDigits=new Set(original.filter(Boolean).map(x=>x.replace(/\./g,'')));
+   for(const v of values)if(!d.candidates.includes(v))d.candidates.push(v);
+   d.decimalHints=[...new Set([...(d.decimalHints||[]),...values.flatMap(decimalHints)])];
+   const agreed=values.length===2&&values[0]===values[1];
+   const val=values[0]||'';
+   const shape=String(d.shapeHint||'');
+   const seg=segmentCellGlyphs(d);
+   const segValid=seg&&seg.dotBefore>0&&seg.digits?.length===val.replace('.','').length;
+   // Only accept when two NEW preprocessings agree on a dotted value and a separate
+   // digit-string or image-geometry signal supports it. Agreement is still NOT proof.
+   const evidence=(shape===val || (originalDigits.has(val.replace('.',''))&&segValid));
+   if(agreed && /^\d{1,4}\.\d$/.test(val) && valid(val) && evidence){
+     d.odds=val;d.checked=false;d.confidence=Math.min(r1[i].confidence||0,r2[i].confidence||0);
+     d.review='小数点・桁欠け追加2条件一致の参考候補（画像未照合）';filled++;
+   }else{
+     d.review=(d.review||'要確認')+'／拡大再認識候補あり（未照合）';proposed++;
+   }
+  });
+ }
+ return {filled,proposed};
+}
+// v2.19.3: focused tile OCR. Re-read the numeric ink without the colored boat stripe,
+// row separator, or neighbouring odds. This is a different crop, NOT independent proof.
+function focusTile(d,variant=0){
+ const source=oddsCell(d);if(!source)return null;
+ const out=document.createElement('canvas');out.width=360;out.height=112;
+ const ctx=out.getContext('2d',{willReadFrequently:true});ctx.fillStyle='#fff';ctx.fillRect(0,0,360,112);
+ // The numeric field is right-aligned in each 360x112 screenshot-derived cell.
+ // Preserve the complete leftmost digit for four-digit values; remove the right bar.
+ const sx=105,sy=12,sw=212,sh=66;
+ ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+ ctx.drawImage(source,sx,sy,sw,sh,24,10,312,92);
+ if(variant===1){
+  const px=ctx.getImageData(0,0,360,112);
+  for(let i=0;i<px.data.length;i+=4){
+   const r=px.data[i],g=px.data[i+1],b=px.data[i+2];
+   const gray=.299*r+.587*g+.114*b;
+   // Leave anti-aliased edges intact: gentle grayscale instead of destructive thresholding.
+   const corrected=Math.max(0,Math.min(255,(gray-127)*1.27+127));
+   px.data[i]=px.data[i+1]=px.data[i+2]=corrected;
+  }
+  ctx.putImageData(px,0,0);
+ }
+ return out;
+}
+function focusMontage(items,variant=0){
+ const cv=document.createElement('canvas');cv.width=CW*NC;cv.height=CH*Math.ceil(items.length/NC);
+ const c=cv.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,cv.width,cv.height);
+ items.forEach((d,i)=>{const tile=focusTile(d,variant);if(tile)c.drawImage(tile,(i%NC)*CW+7,Math.floor(i/NC)*CH+4,CW-14,CH-8)});
+ return cv;
+}
+function isOrderedSubsequence(shorter,longer){
+ if(!shorter||shorter.length>=longer.length)return false;
+ let n=0;for(const ch of longer)if(ch===shorter[n])n++;
+ return n===shorter.length;
+}
+async function retryFocusedNumbers(worker,rows){
+ const pending=rows.filter(d=>!d.checked&&!valid(d.odds)&&d.candidates?.length);
+ let filled=0,suggested=0;
+ for(let base=0;base<pending.length;base+=24){
+  const batch=pending.slice(base,base+24);
+  $('log').textContent=`数字部分の焦点OCRを検査中 ${Math.min(base+batch.length,pending.length)}/${pending.length}件…`;
+  const readA=candidates(await worker.recognize(focusMontage(batch,0)),batch);
+  const readB=candidates(await worker.recognize(focusMontage(batch,1)),batch);
+  batch.forEach((d,i)=>{
+   const a=readA[i],b=readB[i];
+   const values=[a?.value,b?.value].filter(valid);
+   for(const v of values)if(!d.candidates.includes(v))d.candidates.push(v);
+   if(values.length) d.focusHint=values.join(' / ');
+   const agreed=values.length===2&&values[0]===values[1];
+   if(!agreed)return;
+   const value=values[0];
+   if(!/^\d{1,4}\.\d$/.test(value)||!valid(value))return;
+   const minConf=Math.min(Number(a.confidence)||0,Number(b.confidence)||0);
+   if(minConf<45){d.review=(d.review||'未読')+'／焦点OCR低信頼候補（未確認）';suggested++;return}
+   // Demand physical dot and digit count in original image before promoting a candidate.
+   const seg=segmentCellGlyphs(d),digits=value.replace('.','');
+   const geometryOk=seg&&seg.dotBefore===value.indexOf('.')&&seg.digits.length===digits.length;
+   const initial=(d.rawOcrCandidates||d.candidates.slice(0,3)).filter(Boolean).map(String);
+   const rawDigits=initial.map(x=>x.replace('.',''));
+   const sameDigits=rawDigits.includes(digits);
+   const missingMiddle=rawDigits.some(x=>x.length===digits.length-1&&x.length>=2&&isOrderedSubsequence(x,digits));
+   const contradictory=rawDigits.some(x=>x.length>=digits.length&&x!==digits);
+   if(!geometryOk||!(!contradictory&&(sameDigits||missingMiddle))){
+    d.review=(d.review||'未読')+'／焦点OCR2条件一致だが形状不一致（要確認）';suggested++;return;
+   }
+   d.odds=value;d.checked=false;d.autoFour=false;d.focusReview=true;
+   d.confidence=minConf;
+   d.review=sameDigits?'焦点OCR2条件一致・小数点復元（参考・画像未照合・要確認）':'焦点OCR2条件一致・途中桁欠け疑い（参考・画像未照合・要確認）';
+   filled++;
+  });
+ }
+ return {filled,suggested};
+}
+async function getTesseract(){if(window.Tesseract)return window.Tesseract;await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=resolve;s.onerror=()=>reject(Error('OCRライブラリを取得できません。ネット接続を確認してください'));document.head.appendChild(s)});return window.Tesseract}
+function start(){data=makeData();batchDrafts={};auditHistory=[];initialStats=null;previousRecalcStats=null;recalcSnapshot=null;dataRevision=0;updateRecalcUI();$('result').classList.remove('hidden');render()}
+// v2.19.3: completion is separate from displaying the initial empty 185-row table.
+let auditRunState='未実行';
+function reportAuditState(state,message){auditRunState=state;const info=(state==='完了'?'✅ ':state==='失敗'?'⚠ ':'⏳ ')+message;$('log').textContent=info;const display=$('auditStateDisplay');if(display)display.textContent=info;}
+window.addEventListener('error',e=>{if(isRunning){reportAuditState('失敗','処理中に画面エラーが発生：'+(e.message||'詳細不明')+'。解析未完了です。v2.12の保存済みデータがあれば「保存済みの監査を再開」を選んでください。')}});
+window.addEventListener('unhandledrejection',e=>{if(isRunning){reportAuditState('失敗','OCR処理が中断：'+String(e.reason?.message||e.reason||'原因不明')+'。解析未完了です。')}});
+$('run').onclick=async()=>{if(isRunning)return;const missing=['f3t','f2','f3f'].filter(id=>!images[id]);if(missing.length){$('log').textContent='⚠ 画像が'+missing.length+'枚不足しています。3枚選んでね。';return}for(const d of defs){let bb=regions[d.id];if(!validateRect(d)){$('log').textContent='⚠ '+d.title+'の青枠が小さすぎます。表全体を囲んでね。';return}}
+if(data.some(d=>d.checked)&&!confirm('目視照合済みの数字があります。新しい解析で上書きしますか？'))return; if($('url').value.trim())readUrl();isRunning=true;$('run').disabled=true;let worker;try{start();reportAuditState('処理中','OCRの準備を始めます。初期表示の0/185件は解析完了を意味しません。');const t=await getTesseract();$('log').textContent='OCRを準備中…';worker=await t.createWorker('eng',1,{logger:m=>{if(m.status==='recognizing text')$('log').textContent='OCR処理中 '+Math.round(100*(m.progress||0))+'%'}});await worker.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:'0123456789.'});let n=0;for(const def of defs){const items=data.filter(d=>d.id===def.id);$('log').textContent=def.title+'の数字を解析中…';const res=await worker.recognize(montage(items,0));$('log').textContent=def.title+' を別条件で再確認中（2/3）…';const res2=await worker.recognize(montage(items,1));$('log').textContent=def.title+' を別条件で再確認中（3/3）…';const res3=await worker.recognize(montage(items,2));n+=combineCandidates(items,candidates(res,items),candidates(res2,items),candidates(res3,items));await supplementaryGlyphOCR(worker,items.filter(d=>!valid(d.odds)),def.title);render()}
+const shape=oddsShapeReview(data);const fours=reviewFourDigitAuto(data);const extra=await retryMissingDigitShapes(worker,data);const focus=await retryFocusedNumbers(worker,data);render();const filled=data.filter(x=>valid(x.odds)).length;if(filled===0){reportAuditState('失敗','OCR処理は終了しましたが有効な候補が0/185件です。解析失敗として扱います。青枠・画像・通信状態を確認してください。');}else{initialStats=calculateAuditStats();reportAuditState('完了',`解析完了：候補 ${filled}/185件・未読保留 ${185-filled}件。3条件OCR一致：${n}件、専用形状候補：${shape.proposals}件、4桁高信頼：${fours}件、追加OCR参考候補：${extra.filled}件、追加候補要確認：${extra.proposed}件、焦点OCR参考：${focus.filled}件、焦点OCR要確認：${focus.suggested}件（いずれも画像未照合）。`);} $('result').scrollIntoView({behavior:'smooth',block:'start'});
+}catch(e){reportAuditState('失敗','読み取りエラー：'+(e.message||e)+'。解析は完了していません。');try{render()}catch(uiError){$('log').textContent+=' ／ 表示エラー：'+uiError.message}}finally{if(worker)try{await worker.terminate()}catch(e){}isRunning=false;$('run').disabled=false}};
+$('manual').onclick=()=>{if($('url').value.trim())readUrl();start();$('log').textContent='空欄の監査表を作りました';$('result').scrollIntoView({behavior:'smooth'})};
+function label(id){return groups.find(g=>g[0]===id)?.[1]||id}
+function render(){const total=data.length,filled=data.filter(x=>valid(x.odds)).length,auto4=data.filter(x=>x.autoFour&&!x.checked&&valid(x.odds)).length,reviewCount=data.filter(x=>!valid(x.odds)&&x.candidates&&x.candidates.length).length,verified=data.filter(x=>valid(x.odds)&&x.checked).length; $('betstats').innerHTML=groups.map(([id,name])=>{const part=data.filter(x=>x.id===id),count=part.filter(x=>valid(x.odds)).length,checked=part.filter(x=>valid(x.odds)&&x.checked).length;return `<div class="betstat">${name}<b>${count}/${part.length}</b>未読・保留 ${part.length-count}件・目視照合 ${checked}件・4桁OCR高信頼 ${part.filter(x=>x.autoFour&&!x.checked).length}件</div>`}).join('');$('stats').innerHTML=`<div class="stat">総件数<strong>${total}</strong></div><div class="stat">OCR・入力候補<strong>${filled}</strong></div><div class="stat">画像目視照合済<strong>${verified}</strong></div><div class="stat">未読・保留<strong>${total-filled}</strong></div>`;
+const mismatches=data.filter(currentFormatMismatch).length;
+$('exportwarning').textContent=(mismatches?'⚠ 画像の数字の形と異なるOCR記録 '+mismatches+'件（分析室向け出力では未読・要確認として扱います）。 ':'')+(auto4?'✓ 4桁のOCR高信頼候補 '+auto4+'件（目視照合とは別）。 ':'')+(verified===185?'✅ 全185件を画像照合済みです。':'ℹ 未照合 '+(185-verified)+'件。予想前の比較用参考値としてのみ利用可能。最終買い目は画像で確認してください。');
+const f=$('filter').value,st=$('status').value;let rows=data.filter(x=>(f==='all'||f===x.id)&&(st==='all'||(st==='missing'&&!valid(x.odds))||(st==='attention'&&(!valid(x.odds)||!x.checked))||(st==='pending'&&!x.checked)));const frag=document.createDocumentFragment();for(let d of rows){const tr=document.createElement('tr'),a=document.createElement('td'),b=document.createElement('td'),c=document.createElement('td'),q=document.createElement('td'),v=document.createElement('td'),z=document.createElement('td');a.textContent=label(d.id);b.textContent=d.key;b.className='keycell';if(!valid(d.odds)||d.confidence<65)tr.className='needs';if((d.review&&d.review.includes('不一致'))||currentFormatMismatch(d))tr.className='uncertain';const inp=document.createElement('input');inp.type='text';inp.inputMode='decimal';inp.value=d.odds;inp.placeholder='未読';inp.setAttribute('aria-label',label(d.id)+' '+d.key+' の倍率');inp.onchange=()=>{if(!initialStats)initialStats=calculateAuditStats();const was=String(d.odds||'');d.odds=inp.value.trim();d.checked=false;d.verificationKind='';d.verifiedAt='';d.autoFour=false;d.confidence=100;d.review='手動入力・未照合';d.persistedFormatMismatch=false;d.manualFormatOverride=false;recordAuditAction(d,was,d.odds,'手動入力・未照合');invalidateRecalc();render();saveProgress()};c.append(inp);const note=document.createElement('div');note.className='reviewnote';note.textContent=(currentFormatMismatch(d)?'⚠ 元画像の数字の形に不一致・要確認 / ':'')+(d.autoFour?'✓ 4桁OCR高信頼・目視未照合 / ':'')+(d.review||'未読')+(d.candidates?.length?' / OCR候補: '+[...new Set(d.candidates)].join(' / '):'')+(d.decimalHints?.length?' / 小数点の可能性（未確認）: '+d.decimalHints.join(' / '):'');q.append(note);const view=document.createElement('button');view.type='button';view.className='tinybtn';view.textContent='見る';view.onclick=()=>showOddsCell(d);view.disabled=!images[defs.find(x=>x.id===d.id).file];v.append(view);const chk=document.createElement('input');chk.type='checkbox';chk.checked=d.checked;chk.disabled=!valid(d.odds);chk.setAttribute('aria-label',d.key+' 画像照合済');chk.onchange=()=>{if(chk.checked&&!images[defs.find(x=>x.id===d.id).file]){alert('元画像が必要です。画像なしでは照合済みにできません');render();return}if(!initialStats)initialStats=calculateAuditStats();d.checked=chk.checked;if(!chk.checked)d.manualFormatOverride=false;d.verificationKind=chk.checked?'confirmed':'';d.verifiedAt=chk.checked?new Date().toISOString():'';if(chk.checked)d.review='元画像と目視照合済（一覧表）';recordAuditAction(d,d.odds,d.odds,chk.checked?'正しい倍率を確認':'照合取消');invalidateRecalc();render();saveProgress()};z.append(chk);tr.append(a,b,c,q,v,z);frag.append(tr)}$('rows').replaceChildren(frag);updateExports()}
+$('filter').onchange=render;$('status').onchange=render;
+$('previewclose').onclick=()=>$('previewdlg').close();
+function showOddsCell(item){const cell=oddsCell(item);if(!cell)return;const c=$('previewcanvas'),ctx=c.getContext('2d');c.width=720;c.height=224;ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.imageSmoothingEnabled=true;ctx.drawImage(cell,10,8,700,208);$('previewtitle').textContent=label(item.id)+' '+item.key+'（元画像の該当セル）';$('previewcontext').textContent='現在の入力：'+(item.odds||'未読')+' ／ OCR候補：'+(item.candidates?.join(' / ')||'なし')+' ／ 1文字補助候補（未確認）：'+(item.glyphHint||'なし')+' ／ 小数点候補（未確認）：'+(item.decimalHints?.join(' / ')||'なし')+'。拡大像は元画像の切り取りのため、数字の読み間違いに注意。';$('previewdlg').showModal();}
+$('missing').onclick=()=>{$('filter').value='all';$('status').value='missing';render();$('result').scrollIntoView({behavior:'smooth'});};
+$('retry').onclick=async()=>{if(isRunning)return;invalidateRecalc();const missing=data.filter(d=>!valid(d.odds));if(!missing.length){$('retrymsg').textContent='未読・保留は0件です。残りは画像照合を進めてね。';return;} if(!Object.keys(images).length){$('retrymsg').textContent='画像がないため再認識できません。';return;}isRunning=true;$('retry').disabled=true;let worker;try{const t=await getTesseract();worker=await t.createWorker('eng');await worker.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:'0123456789.'});let before=missing.length;for(const def of defs){const subset=data.filter(d=>d.id===def.id&&!valid(d.odds));if(!subset.length)continue;$('retrymsg').textContent=def.title+'の未読 '+subset.length+'件を再認識中…';const result=await worker.recognize(montage(subset,0));const result2=await worker.recognize(montage(subset,1));const result3=await worker.recognize(montage(subset,2));combineCandidates(subset,candidates(result,subset),candidates(result2,subset),candidates(result3,subset),true);render();}const fourAdded=reviewFourDigitAuto(data);let after=data.filter(d=>!valid(d.odds)).length;$('retrymsg').textContent=`再認識終了：未読 ${before} → ${after} 件。4桁OCR高信頼候補 ${fourAdded}件。数字は目視未照合です。`;render();}catch(e){$('retrymsg').textContent='再認識エラー：'+(e.message||e)}finally{if(worker)await worker.terminate().catch(()=>{});isRunning=false;$('retry').disabled=false;}};
+
+
+// v2.5: sequential human verification. Never automatically check a cell based on OCR.
+let queue=[],queueIndex=0;
+function queueItems(){return data.filter(d=>!d.checked)}
+function drawLargeCell(d,canvas){const tile=oddsCell(d);const ctx=canvas.getContext('2d');canvas.width=720;canvas.height=224;ctx.fillStyle='#fff';ctx.fillRect(0,0,720,224);if(tile){ctx.imageSmoothingEnabled=false;ctx.drawImage(tile,8,8,704,208)}else{ctx.fillStyle='#92400e';ctx.font='20px sans-serif';ctx.fillText('画像がありません',30,110)}}
+function showQueue(){if(queueIndex>=queue.length){$('queueDlg').close();render();$('retrymsg').textContent='確認リストの最後まで進みました。未照合の項目は後で再度確認できます。';return}
+ const d=queue[queueIndex];$('queueTitle').textContent=label(d.id)+'　'+d.key;$('queueProgress').textContent=(queueIndex+1)+' / '+queue.length+'件　照合済 '+data.filter(x=>x.checked).length+'/185';drawLargeCell(d,$('queueCanvas'));
+ $('queueHint').textContent='OCR判定：'+(d.review||'未読')+' ／ 候補：'+(d.candidates?.join(' / ')||'なし')+(d.glyphHint?' ／ 1文字補助：'+d.glyphHint+'（未照合）':'')+(d.shapeHint?' ／ 専用形状：'+d.shapeHint+'（未照合）':'')+'。小数点・末尾・4桁の数値を元画像で確認してください。';$('queueValue').value=valid(d.odds)?d.odds:'';
+ const choices=[...new Set([...(d.candidates||[]),...(d.decimalHints||[])])].filter(valid).slice(0,6);$('queueChoices').replaceChildren();for(const choice of choices){const btn=document.createElement('button');btn.type='button';btn.className='secondary';btn.textContent='候補 '+choice;btn.onclick=()=>{$('queueValue').value=choice};$('queueChoices').append(btn)}
+}
+$('reviewnext').onclick=()=>{queue=queueItems();queueIndex=0;if(!queue.length){$('retrymsg').textContent='全件が画像照合済みです';return}showQueue();$('queueDlg').showModal()};
+$('queueSkip').onclick=()=>{queueIndex++;showQueue()};
+$('queueClose').onclick=()=>$('queueDlg').close();
+$('queueVerify').onclick=()=>{const d=queue[queueIndex],value=$('queueValue').value.trim();if(!valid(value)){alert('倍率を確認して、正しい数値を入力してください。');return}if(!images[defs.find(x=>x.id===d.id).file]){alert('元画像がありません。画像照合済みにはできません。');return}d.odds=value;d.checked=true;d.autoFour=false;d.review='元画像と照合済';d.confidence=100;render();queueIndex++;showQueue()};
+
+function payload(){const by=Object.fromEntries(groups.map(([id,name])=>[id,{label:name,filled:data.filter(x=>x.id===id&&valid(x.odds)).length,total:data.filter(x=>x.id===id).length}]));return {version:'2.19.3',status:data.every(x=>valid(x.odds)&&x.checked)?'全件画像照合済':'監査未完了',source_policy:'スクショ正本・URLで倍率上書きなし',url:$('url').value,venue:$('venue').value||'不明',race:$('race').value||'不明',date:$('date').value||'不明',screenshot_time:$('time').value||'不明',counts:by,filled:data.filter(x=>valid(x.odds)).length,image_verified:data.filter(x=>valid(x.odds)&&x.checked).length,odds:data.map(x=>({bet_type:label(x.id),combination:x.key,odds:valid(x.odds)&&!currentFormatMismatch(x)?Number(x.odds):null,ocr_recorded_unverified:valid(x.odds)?String(x.odds):null,image_format_mismatch:currentFormatMismatch(x),image_verified:!!x.checked,verification_kind:x.checked?(x.verificationKind||'manual'):null,visual_override_of_auto_format_hint:!!x.manualFormatOverride,verified_at:x.checked?(x.verifiedAt||null):null,four_digit_ocr_high_confidence:!!x.autoFour,ocr_confidence:x.confidence,review_state:x.review||'未読',image_format_advisory:observedNumberFormat(x)?.description||'判定不能',focus_ocr_candidate_unverified:x.focusHint||'',ocr_candidates:x.candidates||[],decimal_suggestions_unverified:x.decimalHints||[]}))}}
+function output(){const p=payload();return `【競艇オッズ監査 v2.19.3｜全185通り】\n状態：${p.status}\n開催場：${p.venue} / ${p.race} / ${p.date}\nスクショ時刻：${p.screenshot_time}\n公式URL：${p.url||'未設定'}\nスクショ正本・URLで倍率上書きなし\n入力済：${p.filled}/185、画像照合済：${p.image_verified}/185、未読・保留：${185-p.filled}\n※OCR一致も精度保証ではありません。数字の形と不一致のOCR値は倍率として出力せず、未読・要確認にします。未照合値はデータ分析室向け参考候補です。必要な数値は元画像で確認してください。\n\n`+p.odds.map(x=>`${x.bet_type}\t${x.combination}\t${x.odds===null?'未読':(x.image_verified?x.odds:x.odds+'（未照合）')}\t${x.image_verified?'画像確認済':'未照合'}`).join('\n')}
+function updateExports(){$('export').value=output()}$('url').addEventListener('input',updateExports);$('time').addEventListener('input',updateExports);
+$('copy').onclick=async()=>{const s=output();try{if(!navigator.clipboard?.writeText)throw Error('copy blocked');await navigator.clipboard.writeText(s);$('exportmsg').textContent='✅ 全185通りの監査テキストをコピーしました'}catch(e){$('export').focus();$('export').select();$('exportmsg').textContent='⚠ 直接コピーできません。下のテキストを長押ししてコピーしてね。'}};
+function save(name,txt,mime){const blob=new Blob([txt],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+$('txt').onclick=()=>save('boat_odds_audit_v2_19_3.txt',output(),'text/plain;charset=utf-8');$('json').onclick=()=>save('boat_odds_audit_v2_19_3.json',JSON.stringify(payload(),null,2),'application/json;charset=utf-8');
+
+// v2.5: local-only audit resume + batch visual review. No OCR result is ever automatically image-verified.
+const SAVE_KEY='boat-odds-auditor-v28-audit', PREVIOUS_SAVE_KEY='boat-odds-auditor-v27-audit', LEGACY_SAVE_KEY='boat-odds-auditor-v26-audit';let batchOffset=0, batchVisible=[];let batchDrafts={};
+function auditKey(d){return d.id+'|'+d.key}
+// v2.19.3: detect only the FORMAT of the printed odds from image pixels.
+// Never infer the actual digits from the length alone. Works on red 4-digit and black dotted text.
+ // A borderline crop returns null rather than asserting the format.
+function observedNumberFormat(d){
+ const def=defs.find(z=>z.id===d.id), im=def?images[def.file]:null, box=regions[d.id];
+ if(!im||!box)return null;
+ const signature=box.join(',');
+ if(d._formatCache&&d._formatCache.image===im&&d._formatCache.signature===signature)return d._formatCache.value;
+ const tile=oddsCell(d);if(!tile)return null;
+ const w=tile.width,h=tile.height,p=tile.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h).data;
+ const columns=[];let minY=h;
+ for(let x=90;x<Math.min(w-18,342);x++){
+  let count=0,top=h,bottom=-1;
+  for(let y=29;y<Math.min(h-18,88);y++){
+   const k=(y*w+x)*4, r=p[k],g=p[k+1],b=p[k+2];
+   const neutral=(r+g+b)/3<172 && Math.max(r,g,b)-Math.min(r,g,b)<65;
+   const red=r>100 && r>g*1.40 && r>b*1.40 && g<160;
+   if(neutral||red){count++;top=Math.min(top,y);bottom=Math.max(bottom,y)}
+  }
+  columns.push({x,count,top,bottom});
+ }
+ const parts=[];let start=-1,last=-1;
+ for(let i=0;i<columns.length;i++){
+  if(columns[i].count>=2){if(start<0)start=i;last=i;}
+  else if(start>=0 && i-last>=2){parts.push([start,last]);start=-1;}
+ }
+ if(start>=0)parts.push([start,last]);
+ const glyphs=parts.map(([a,b])=>{const cs=columns.slice(a,b+1).filter(c=>c.count>=2);return {
+  x0:columns[a].x,x1:columns[b].x,top:Math.min(...cs.map(c=>c.top)),bottom:Math.max(...cs.map(c=>c.bottom)),
+  width:columns[b].x-columns[a].x+1,height:Math.max(...cs.map(c=>c.bottom))-Math.min(...cs.map(c=>c.top))+1};
+ }).filter(g=>g.width>=2&&g.height>=2);
+ if(glyphs.length<2||glyphs.length>6)return null;
+ const digits=glyphs.filter(g=>g.height>=18 && g.height<=46 && g.width>=5);
+ if(digits.length<2||digits.length>5)return null;
+ const small=glyphs.filter(g=>!digits.includes(g));
+ if(small.length>1)return null;
+ const dot=small[0]||null;
+ if(dot){
+  const baseline=Math.max(...digits.map(g=>g.bottom));
+  if(dot.height>13||dot.width>13||dot.top<Math.min(...digits.map(g=>g.top))+12||dot.bottom<baseline-12)return null;
+ }
+ const dotBefore=dot?digits.filter(g=>g.x0<dot.x0).length:-1;
+ if(dot&&(dotBefore<1||dotBefore>=digits.length))return null;
+ const result={digits:digits.length,dotBefore,hasDot:!!dot,description:digits.length+'数字'+(dot?'・小数点あり':'・小数点なし')};
+ d._formatCache={image:im,signature,value:result};return result;
+}
+function matchesImageFormat(s,fmt){
+ if(!fmt||!valid(s))return false;
+ const v=String(s),m=v.match(/^(\d+)(?:\.(\d))?$/);if(!m)return false;
+ const nd=m[1].length+(m[2]?m[2].length:0);
+ return nd===fmt.digits && ((fmt.dotBefore<0&&!m[2])||(fmt.dotBefore>0&&m[2]&&m[1].length===fmt.dotBefore));
+}
+function formatCandidate(d,fmt){
+ if(!fmt)return null;
+ // Prefer evidence actually seen in OCR, never fabricate digits from a format pattern.
+ const raw=(d.rawOcrCandidates||[]).filter(valid).map(String);
+ const focus=focusValues(d);
+ const votes=new Map();let order=0;
+ function add(s,weight,source){if(!matchesImageFormat(s,fmt))return;
+  const v=String(s);let row=votes.get(v);if(!row){row={value:v,score:0,rawFirst:false,order:order++,sources:[]};votes.set(v,row)}
+  row.score+=weight;row.sources.push(source);if(source==='OCR第一候補')row.rawFirst=true;
+ }
+ raw.forEach((v,i)=>add(v,i===0?8:(i===1?2.5:1.5),i===0?'OCR第一候補':'OCR別条件'));
+ focus.forEach((v,i)=>add(v,2.0,'焦点OCR'+(i+1)));
+ if(valid(d.odds))add(d.odds,2.0,'記録済みOCR');
+ if(valid(d.glyphHint))add(d.glyphHint,1.0,'文字補助');
+ if(valid(d.shapeHint))add(d.shapeHint,1.0,'形状候補');
+ // d.candidates can include all the above (do NOT double-vote on duplicates).
+ for(const v of [...new Set((d.candidates||[]).filter(valid).map(String))])if(!votes.has(v))add(v,0.8,'追加候補');
+ const ranked=[...votes.values()].sort((a,b)=>b.score-a.score||Number(b.rawFirst)-Number(a.rawFirst)||a.order-b.order);
+ return {winner:ranked[0]||null,ranked};
+}
+function currentFormatMismatch(d){
+ if(d.checked||!valid(d.odds))return false;
+ const fmt=observedNumberFormat(d);
+ return fmt ? !matchesImageFormat(d.odds,fmt) : !!d.persistedFormatMismatch;
+}
+// v2.19.3: prefer image-focused OCR drafts, without treating a draft as image verification.
+function focusValues(d){
+ const m=String(d.focusHint||'').match(/\d+(?:\.\d+)?/g)||[];
+ return m.filter(valid);
+}
+function suggestedValue(d){
+ // A UI draft is never automatically saved as verified odds.
+ if(d.checked&&valid(d.odds))return {value:String(d.odds),kind:'元画像の目視照合済み',safe:true,source:'confirmed'};
+ const fmt=observedNumberFormat(d),candidatesFmt=formatCandidate(d,fmt);
+ if(fmt){
+  if(candidatesFmt?.winner){
+   const pick=candidatesFmt.winner;
+   const conflict=candidatesFmt.ranked.length>1;
+   const wrongRecord=valid(d.odds)&&!matchesImageFormat(d.odds,fmt);
+   const message=conflict?'元画像の数字の形には一致。ただしOCR候補が複数あり要目視確認':'元画像の数字の形とOCR候補が一致（未照合）';
+   return {value:pick.value,kind:fmt.description+'／'+message+(wrongRecord?'／記録済み倍率は桁数・小数点不一致':''),safe:!conflict&&!wrongRecord,source:'format',format:fmt,conflict};
+  }
+  // Important: OCR misses digits in e.g. 548.0 -> 78.0, so do not display the truncated value as a best guess.
+  return {value:'',kind:fmt.description+'／一致する数字候補なし・桁欠けの疑い。元画像から入力してください',safe:false,source:'format',format:fmt,conflict:true};
+ }
+ // If pixel segmentation is uncertain, preserve v2.17's conservative OCR suggestions.
+ const fv=focusValues(d),dedicated=String(d.shapeHint||'').trim();
+ const raw=(d.rawOcrCandidates||[]).filter(valid).map(String);
+ if(d.autoFour&&valid(d.odds))return {value:String(d.odds),kind:'4桁OCR高信頼・目視未照合',safe:true,source:'ocr'};
+ if(d.focusReview&&valid(d.odds))return {value:String(d.odds),kind:'焦点OCR参考候補・元画像未照合',safe:false,source:'focus'};
+ if(fv.length>=2&&fv[0]===fv[1]&&/^\d{1,4}\.\d$/.test(fv[0])){
+  const v=fv[0],digits=v.replace('.','');
+  const aligned=raw.some(x=>x.replace('.','')===digits||isOrderedSubsequence(x.replace('.',''),digits));
+  if(!valid(d.odds)||String(d.odds)===v) return {value:v,kind:aligned?'焦点OCR2回一致（仮表示／未照合）':'焦点OCR2回一致だが数字の欠落疑い（要目視確認）',safe:aligned,source:'focus'};
+ }
+ if(valid(d.odds))return {value:String(d.odds),kind:'OCR・入力候補（目視未照合）',safe:!fv.length,source:'ocr'};
+ const digits=x=>String(x).replace(/\./g,'');
+ const exact=raw.filter(x=>x===dedicated).length, dotless=raw.filter(x=>digits(x)===digits(dedicated)).length;
+ const dissent=raw.filter(x=>digits(x)!==digits(dedicated));
+ if(valid(dedicated)&&/^\d{1,4}\.\d$/.test(dedicated)&&(exact>=1||(dotless>=2&&!dissent.length)))return {value:dedicated,kind:'専用形状・OCR比較（仮表示／未照合）',safe:!dissent.length,source:'shape'};
+ if(fv.length&&/^\d{1,4}\.\d$/.test(fv[0]))return {value:fv[0],kind:'焦点OCR単独候補（仮表示／要目視確認）',safe:false,source:'focus'};
+ const all=[...(d.candidates||[]),...(d.decimalHints||[])].filter(valid).map(String);
+ const first=all.find(x=>/^\d{1,4}\.\d$/.test(x))||all[0]||'';
+ return {value:first,kind:first?'OCR第一候補（仮表示／要確認）':'候補なし・元画像を確認',safe:false,source:first?'ocr':'none'};
+}
+function quickChoices(d){
+ const best=suggestedValue(d).value,fmt=observedNumberFormat(d);
+ const xs=[best,...(d.rawOcrCandidates||[]),...focusValues(d),d.odds,d.shapeHint,d.glyphHint,
+   ...(d.candidates||[]),...(d.decimalHints||[])];
+ const unique=[...new Set(xs.filter(valid).map(String))];
+ return (fmt?[...unique.filter(v=>matchesImageFormat(v,fmt)),...unique.filter(v=>!matchesImageFormat(v,fmt))]:unique).slice(0,9);
+}
+function batchStash(){for(const card of $('batchGrid').children){if(!card._audit)continue;const {d,inp,cb,correct}=card._audit;batchDrafts[auditKey(d)]={value:inp.value,checked:cb.checked,hold:!!correct?.checked}}}
+
+function identity(){return ($('url').value||'').trim()+'|'+($('venue').value||'')+'|'+($('race').value||'')+'|'+($('date').value||'')}
+function saveProgress(skipBatchStash=false){
+ if(data.length!==185)return false;
+ if(!skipBatchStash)batchStash();const snap={schema:31,when:new Date().toISOString(),identity:identity(),drafts:batchDrafts,meta:{url:$('url').value,venue:$('venue').value,race:$('race').value,date:$('date').value,time:$('time').value},rows:data.map(d=>({id:d.id,key:d.key,odds:d.odds,checked:!!d.checked,confidence:d.confidence,review:d.review,autoFour:!!d.autoFour,rawOcrCandidates:d.rawOcrCandidates||[],candidates:d.candidates,decimalHints:d.decimalHints,glyphHint:d.glyphHint||"",shapeHint:d.shapeHint||"",shapeNote:d.shapeNote||"",focusHint:d.focusHint||"",focusReview:!!d.focusReview,dotFound:!!d.dotFound,verificationKind:d.verificationKind||"",verifiedAt:d.verifiedAt||"",persistedFormatMismatch:currentFormatMismatch(d),manualFormatOverride:!!d.manualFormatOverride})),auditHistory:auditHistory.slice(-600),initialStats:initialStats,previousRecalcStats:previousRecalcStats,recalcSnapshot:recalcSnapshot,revision:dataRevision};
+ try{localStorage.setItem(SAVE_KEY,JSON.stringify(snap));$('savemsg').textContent='✅ 端末内に保存：'+new Date(snap.when).toLocaleString('ja-JP')+'（元画像は保存されません）';return true}catch(e){$('savemsg').textContent='⚠ 保存に失敗：ブラウザのストレージ設定・空き容量を確認してね';return false}
+}
+function resumeProgress(){let snap;try{snap=JSON.parse(localStorage.getItem(SAVE_KEY)||localStorage.getItem(PREVIOUS_SAVE_KEY)||localStorage.getItem(LEGACY_SAVE_KEY)||'null')}catch(e){};
+ if(!snap||![25,26,27,28,29,30,31].includes(snap.schema)||!Array.isArray(snap.rows)||snap.rows.length!==185){$('savemsg').textContent='保存データがまだありません。先に解析して保存してね。';return}
+ const current=identity();const existingUrl=$('url').value.trim();
+ if(existingUrl&&snap.meta.url&&existingUrl!==snap.meta.url){if(!confirm('現在入力中のURLと保存済みレースのURLが異なります。保存済みレースに切り替えますか？'))return}
+ if(data.length===185&&data.some(d=>d.checked||valid(d.odds))){if(!confirm('現在の監査データを保存済みの内容で置き換えますか？'))return}
+ for(const [id,val] of Object.entries(snap.meta)){$(id==='url'?'url':id).value=val||''}
+ // Never mix an existing in-memory screenshot from another race with resumed audit rows.
+ for(const file of ['f3t','f2','f3f']){delete images[file];$(file).value='';}
+ for(const key of Object.keys(regions))delete regions[key];
+ for(const key of Object.keys(regionMethods))delete regionMethods[key];
+ $('cropArea').classList.add('hidden');
+ // Saved images are intentionally absent. User must reselect the same three screenshots before visual verification.
+ batchDrafts=snap.drafts&&typeof snap.drafts==='object'?Object.fromEntries(Object.entries(snap.drafts).map(([k,v])=>[k,{value:String(v?.value||''),checked:snap.schema>=27&&!!v?.checked,hold:snap.schema>=30&&!!v?.hold}])):{};const template=makeData(),indexed=new Map(snap.rows.map(r=>[r.id+'|'+r.key,r]));data=template.map(d=>{const found=indexed.get(d.id+'|'+d.key);return found?{...d,odds:found.odds||'',checked:!!found.checked,confidence:found.confidence||0,review:found.review||'未読',autoFour:!!found.autoFour,rawOcrCandidates:found.rawOcrCandidates||[],candidates:found.candidates||[],decimalHints:found.decimalHints||[],glyphHint:found.glyphHint||"",shapeHint:found.shapeHint||"",shapeNote:found.shapeNote||"",focusHint:found.focusHint||"",focusReview:!!found.focusReview,dotFound:!!found.dotFound,verificationKind:found.verificationKind||(found.checked?(/修正/.test(found.review||'')?'corrected':'legacy'):''),verifiedAt:found.verifiedAt||"",persistedFormatMismatch:!!found.persistedFormatMismatch,manualFormatOverride:!!found.manualFormatOverride}:d});
+ auditHistory=Array.isArray(snap.auditHistory)?snap.auditHistory:[];initialStats=snap.initialStats||null;previousRecalcStats=snap.previousRecalcStats||null;recalcSnapshot=snap.recalcSnapshot||null;dataRevision=Number(snap.revision)||0;
+ $('result').classList.remove('hidden');render();updateRecalcUI();$('savemsg').textContent='✅ 保存済み監査を復元しました。元画像は復元されないため、照合を続ける場合は同じスクショ3枚を選び直してね。';$('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('saveprogress').onclick=saveProgress;$('resume').onclick=resumeProgress;$('resumeHome').onclick=resumeProgress;
+function priority(d){if(!valid(d.odds)||currentFormatMismatch(d))return 0;if(!d.checked&&(/不一致|小数点|要確認|未読/.test(d.review||'')))return 1;if(!d.checked)return 2;return 3}
+function needsReview(d){
+ if(d.checked)return false;
+ if(!valid(d.odds)||currentFormatMismatch(d))return true;
+ if(d.focusReview)return true;
+ if(/不一致|桁欠け|小数点不明|要確認|見本不足|未読/.test(d.review||''))return true;
+ if(d.autoFour)return /不一致|要注意/.test(d.review||'');
+ return !(d.review==='OCR3条件一致・未照合' && d.confidence>=60);
+}
+function batchList(){let xs=data.slice();const mode=$('batchMode').value;
+ if(mode==='suspect')xs=xs.filter(needsReview).sort((a,b)=>priority(a)-priority(b));
+ else if(mode==='priority')xs=xs.filter(d=>!d.checked).sort((a,b)=>priority(a)-priority(b));
+ else if(mode==='unverified')xs=xs.filter(d=>!d.checked);
+ return xs
+}
+function batchDraw(){
+ const xs=batchList();if(batchOffset>=xs.length&&batchOffset>0)batchOffset=Math.max(0,Math.floor((xs.length-1)/12)*12);
+ batchVisible=xs.slice(batchOffset,batchOffset+12);
+ $('batchPage').textContent=xs.length?`${batchOffset+1}〜${Math.min(batchOffset+12,xs.length)}件 / 対象${xs.length}件（画像照合済 ${data.filter(d=>d.checked&&valid(d.odds)).length}/185）`:'対象はありません';
+ $('batchGrid').replaceChildren();
+ for(const d of batchVisible){
+  const card=document.createElement('div');card.className='batch-item'+(priority(d)<2?' needs':'');
+  const heading=document.createElement('b');heading.textContent=label(d.id)+' '+d.key;
+  const img=document.createElement('canvas');img.width=240;img.height=90;const ctx=img.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,240,90);
+  const tile=oddsCell(d);if(tile){ctx.drawImage(tile,0,2,240,86)}else{ctx.font='12px sans-serif';ctx.fillStyle='#9a4b00';ctx.fillText('画像未選択：同じスクショを選択',5,42)}
+  const detail=document.createElement('div');detail.className='small';detail.textContent='OCR候補: '+(d.candidates?.join(' / ')||'なし')+(d.decimalHints?.length?'｜小数点候補: '+d.decimalHints.join(' / '):'')+(d.glyphHint?'｜1文字補助: '+d.glyphHint+'（未照合）':'')+(d.shapeHint?'｜専用形状: '+d.shapeHint+'（未照合）':'')+(d.focusHint?'｜焦点OCR: '+d.focusHint+'（未照合）':'');
+  const hint=suggestedValue(d),draft=batchDrafts[auditKey(d)];
+  const inp=document.createElement('input');inp.type='text';inp.inputMode='decimal';inp.value=(draft&&draft.checked)?draft.value:hint.value;inp.placeholder='候補なし・元画像を見て入力';inp.setAttribute('aria-label',heading.textContent+' 倍率');
+  const state=document.createElement('div');state.className='candidate-state'+(hint.safe?'':' unclear');state.textContent=(hint.value?'仮表示 '+hint.value+'倍／':'入力候補なし／')+hint.kind;
+  const warning=document.createElement('div');warning.className='candidate-warning';warning.textContent=(currentFormatMismatch(d)?'⚠ 記録済み倍率は元画像の桁数・小数点と不一致。分析室には未確認として渡します。 ':'')+'まだ未保存。12件を画像で確認してから、まとめて保存してね。';
+  const cbLabel=document.createElement('label');cbLabel.className='batchselect';const cb=document.createElement('input');cb.type='checkbox';cb.disabled=!tile;cb.checked=!!(draft&&draft.checked&&tile);
+  const span=document.createElement('span');span.textContent=tile?'この倍率が違う・空欄なので修正する':'元画像を選択してください';cbLabel.append(cb,span);
+  const correctLabel=document.createElement('label');correctLabel.className='confirm-correct';
+  const correct=document.createElement('input');correct.type='checkbox';correct.disabled=!tile||d.checked;
+  correct.checked=!!(draft?.hold&&!correct.disabled);
+  const correctText=document.createElement('span');correctText.textContent=d.checked?'照合済み（変更不要）':!tile?'元画像がないので保留':'読めない・判断できないので保留する（任意）';
+  correctLabel.append(correct,correctText);
+  const choices=document.createElement('div');choices.className='candidate-choices';
+  const choiceHint=document.createElement('div');choiceHint.className='small';choiceHint.textContent='候補をタップして修正欄にセット（自動確定はしません）。画像の数字の形と合わない候補も含まれるので必ず目視確認してください。';choices.append(choiceHint);
+  function enableEdit(){inp.readOnly=!cb.checked;card.classList.toggle('editing',cb.checked);if(cb.checked)inp.placeholder='画像で確認した正しい倍率';}
+  for(const val of quickChoices(d)){const b=document.createElement('button');b.type='button';b.className='quickpick';b.textContent='候補 '+val;b.title='候補を修正欄に入力する（画像照合済みにはしない）';b.onclick=()=>{if(!tile){warning.textContent='元画像がありません。同じスクショを選択してね';return}cb.checked=true;correct.checked=false;enableEdit();inp.value=val;warning.textContent='候補 '+val+' を選択しました。元画像と一致することを確認してから「まとめて保存」を押してください。';inp.focus()};choices.append(b)}
+  cb.onchange=()=>{if(cb.checked)correct.checked=false;enableEdit();warning.textContent=cb.checked?'元画像で確認した正しい倍率だけ、まとめて保存してください':'まだ未保存。12件を画像で確認してから、まとめて保存してね。';if(cb.checked)inp.focus()};
+  correct.onchange=()=>{if(correct.checked){cb.checked=false;inp.value=String(d.odds);warning.textContent='元画像とこの記録倍率が一致することを確認したら、まとめて保存してね。'}else warning.textContent='候補表示だけでは画像照合済みになりません。';enableEdit()};
+  enableEdit();
+  if(hint.value&&!cb.checked)card.classList.add('prefilled');
+  card.append(heading,img,detail,state,correctLabel,cbLabel,choices,inp,warning);
+  card._audit={d,inp,cb,correct};$('batchGrid').append(card)
+ }
+ $('batchPrev').disabled=batchOffset===0;$('batchNext').disabled=batchOffset+12>=xs.length
+}
+$('batchOpen').onclick=()=>{if(data.length!==185){$('log').textContent='先にスクショ3枚を解析するか、保存済み監査を再開してね';return}batchOffset=0;$('batchMsg').textContent='';$('batchMsg').className='sub';batchDraw();$('batchDlg').showModal()};
+$('batchMode').onchange=()=>{batchStash();batchOffset=0;batchDraw()};$('batchPrev').onclick=()=>{batchStash();batchOffset=Math.max(0,batchOffset-12);batchDraw()};$('batchNext').onclick=()=>{batchStash();batchOffset+=12;batchDraw()};$('batchSkip').onclick=()=>$('batchNext').click();$('batchClose').onclick=()=>{batchStash();saveProgress();$('batchDlg').close()};
+$('batchConfirm').onclick=()=>{
+ // Explicit user action: the user compared the visible 12 source-image crops
+ // with the shown odds. Unchecked means visually approved, NOT OCR approved.
+ // A software-only guess at digit count/decimal position is advisory and MUST
+ // NOT veto a user's visual confirmation (the old v2.19.2 bug).
+ let corrected=0,confirmed=0,held=0,overrides=0,errors=[],processed=[];
+ for(const card of [...$('batchGrid').children]){
+  if(!card._audit)continue;
+  const {d,inp,cb,correct}=card._audit;
+  if(d.checked)continue;
+  if(correct.checked){held++;continue;}
+  const def=defs.find(x=>x.id===d.id), source=def&&images[def.file];
+  // Never mark a record verified if its ORIGINAL image and crop are not available.
+  if(!source||!regions[d.id]||!oddsCell(d)){
+   held++;errors.push(label(d.id)+' '+d.key+'（元画像・切り抜きなし）');continue;
+  }
+  const was=String(d.odds||'');
+  const value=inp.value.trim();
+  if(!valid(value)){
+   held++;errors.push(label(d.id)+' '+d.key+'（倍率なし・保留）');continue;
+  }
+  // User's source-image visual check takes precedence over OCR format guesses.
+  // Flag any disagreement as an AUDIT ANNOTATION, not a blocking condition.
+  const fmt=observedNumberFormat(d);
+  const formatDisagrees=!!(fmt&&!matchesImageFormat(value,fmt));
+  if(!initialStats)initialStats=calculateAuditStats();
+  const changed=was!==value;
+  const explicitlyCorrected=cb.checked&&changed;
+  const kind=explicitlyCorrected?'修正（12件一括確認）':
+   (cb.checked?'照合確認（修正欄）':changed?'OCR参考候補を画像確認して採用（12件一括）':'正しい倍率を確認（12件一括）');
+  recordAuditAction(d,was,value,kind);
+  d.odds=value;d.checked=true;d.autoFour=false;
+  d.review=(explicitlyCorrected?'元画像と目視照合して修正済（12件一括）':
+   changed?'元画像を目視確認してOCR候補を採用（12件一括）':
+   '元画像と目視照合済（12件一括・値の変更なし）')+
+   (formatDisagrees?'／自動形式推定と不一致（ユーザーの目視確認を優先）':'');
+  d.confidence=100;d.verificationKind=explicitlyCorrected?'corrected':'confirmed';
+  d.verifiedAt=new Date().toISOString();d.persistedFormatMismatch=false;
+  d.manualFormatOverride=formatDisagrees;
+  if(explicitlyCorrected)corrected++;else confirmed++;
+  if(formatDisagrees)overrides++;
+  processed.push(auditKey(d));
+ }
+ batchStash();
+ if(corrected+confirmed){
+  for(const k of processed)delete batchDrafts[k];
+  invalidateRecalc();render();const saved=saveProgress(true);
+  $('batchMsg').textContent=`${saved?'✅':'⚠'} ${confirmed+corrected}件を${saved?'保存しました':'画面に反映しましたが端末への保存は失敗しました'}（チェックなし・確認 ${confirmed}件／手修正 ${corrected}件）。保留 ${held}件。`+
+   (overrides?` 自動の桁数判定と違っていた ${overrides}件も元画像で確認した値を優先しました。`:'')+
+   (saved?' 続けて次の12件を見比べてね。最後に再集計を押してね。':' 端末の保存設定を確認してね。')+
+   (errors.length?' 注意：'+errors.join('、'):'');
+  $('batchMsg').className=saved?'ok':'warn';
+  batchOffset=0;
+ }else{
+  $('batchMsg').textContent='⚠ 保存できた項目はありません。画像・表示倍率を確認してね。保留 '+held+'件。'+(errors.length?' 注意：'+errors.join('、'):'');
+  $('batchMsg').className='warn';
+ }
+ batchDraw();
+ $('batchMsg').scrollIntoView({behavior:'instant',block:'nearest'});
+};
+// Save after user-confirmed changes in the sequential review, too.
+$('queueVerify').onclick=()=>{const d=queue[queueIndex],value=$('queueValue').value.trim();if(!valid(value)){alert('倍率を確認して正しい値を入力してください');return}if(!images[defs.find(x=>x.id===d.id).file]){alert('元画像を選択してください。目視照合済みにできません。');return}if(!initialStats)initialStats=calculateAuditStats();const before=String(d.odds||'');const kind=before===value?'正しい倍率を確認':'修正';recordAuditAction(d,before,value,kind);d.odds=value;d.checked=true;d.autoFour=false;d.review=kind==='修正'?'元画像と目視照合して修正済':'元画像と目視照合済（変更なし）';d.confidence=100;d.verificationKind=kind==='修正'?'corrected':'confirmed';d.verifiedAt=new Date().toISOString();d.persistedFormatMismatch=false;d.manualFormatOverride=false;invalidateRecalc();render();saveProgress();queueIndex++;showQueue()};
+const originalCopyRender=render;
+render=function(){originalCopyRender();};
+
+// v2.8: full pre-prediction dataset, with explicit provenance and no invented odds.
+function prePredictionPayload(){
+ const p=payload();return {...p,phase:'データ分析・要約室への引き継ぎ',status:'185通りの監査データ（画像未照合あり）',verified_for_purchase:false,
+ workflow:'データ分析・要約室へ185通りのOCR参考値と未読情報を引き継ぐ。重要な不一致候補は分析室の依頼に応じて元画像で再確認し、分析室の最終要約から予想室へ渡す。',
+ odds:p.odds.map(x=>({...x,classification:x.image_format_mismatch?'元画像の桁数・小数点と不一致・要確認':x.image_verified?'画像目視照合済':x.four_digit_ocr_high_confidence?'4桁OCR高信頼候補・目視未照合':x.odds!==null?'OCR参考・未照合':'未読・要確認',usable_as_confirmed_odds:!!x.image_verified&&!x.image_format_mismatch}))};
+}
+function prePredictionText(){const p=prePredictionPayload();const count=p.odds.reduce((a,x)=>(a[x.classification]=(a[x.classification]||0)+1,a),{});
+ return `【競艇オッズ監査 v2.19.3｜データ分析・要約室引き継ぎ｜全185通り】\n開催場：${p.venue} / ${p.race} / ${p.date}\nスクショ時刻：${p.screenshot_time}\n公式URL：${p.url||'未設定'}\n情報源：スクショ正本、URLはレース識別のみ\n画像照合済：${count['画像目視照合済']||0}件 / 4桁OCR高信頼候補：${count['4桁OCR高信頼候補・目視未照合']||0}件 / OCR参考・未照合：${count['OCR参考・未照合']||0}件 / 未読・要確認：${count['未読・要確認']||0}件 / 画像の数字の形と不一致：${count['元画像の桁数・小数点と不一致・要確認']||0}件\n【重要】元画像の桁数・小数点と矛盾するOCR記録は倍率を未読扱いにしました（OCR元候補は別項目に保持）。4桁のOCR高信頼候補も元画像の目視照合ではありません。4桁高信頼候補を含めOCR値・OCR候補は誤読することがあります。分析室では未照合のまま参考候補として扱い、確定値と混同せず、重要な値は元画像で照合してください。\n\n券種\t組合せ\t倍率\t照合状態\tOCR候補（未確認）\n`+p.odds.map(x=>`${x.bet_type}\t${x.combination}\t${x.odds===null?'未読':x.odds}\t${x.classification}\t${x.ocr_candidates.join('/')||'なし'}`).join('\n');
+}
+function updatePreOutput(){$('preOutput').value=prePredictionText()}
+async function copyPre(){const t=prePredictionText();try{if(!navigator.clipboard?.writeText)throw Error('copy blocked');await navigator.clipboard.writeText(t);$('preMsg').textContent='✅ 分析室向け185通りをコピーしました（未照合値は参考扱い）'}catch(e){$('preOutput').value=t;$('preOutput').focus();$('preOutput').select();$('preMsg').textContent='コピーが制限されています。表示したテキストを長押ししてコピーしてね'}}
+$('preCopy').onclick=copyPre;
+$('preTxt').onclick=()=>save('boat_odds_analysis_room_v2_19_3.txt',prePredictionText(),'text/plain;charset=utf-8');
+$('preJson').onclick=()=>save('boat_odds_analysis_room_v2_19_3.json',JSON.stringify(prePredictionPayload(),null,2),'application/json;charset=utf-8');
+
+// v2.19.3 — saved-state only recalc; OCR is NEVER executed by this operation.
+let auditHistory=[],initialStats=null,previousRecalcStats=null,recalcSnapshot=null,dataRevision=0;
+function calculateAuditStats(){
+ const total=data.length;
+ const verified=data.filter(d=>d.checked&&valid(d.odds)).length;
+ const corrected=data.filter(d=>d.checked&&d.verificationKind==='corrected'&&valid(d.odds)).length;
+ const confirmed=data.filter(d=>d.checked&&d.verificationKind==='confirmed'&&valid(d.odds)).length;
+ const legacy=data.filter(d=>d.checked&&!['corrected','confirmed'].includes(d.verificationKind)&&valid(d.odds)).length;
+ const missing=data.filter(d=>!valid(d.odds)).length;
+ const mismatch=data.filter(d=>valid(d.odds)&&!d.checked&&currentFormatMismatch(d)).length;
+ const ref=data.filter(d=>valid(d.odds)&&!d.checked&&!currentFormatMismatch(d)).length;
+ const four=data.filter(d=>d.autoFour&&!d.checked&&valid(d.odds)&&!currentFormatMismatch(d)).length;
+ const review=data.filter(d=>!d.checked&&needsReview(d)).length;
+ const by=Object.fromEntries(groups.map(([id,name])=>{const rows=data.filter(d=>d.id===id);return [id,{label:name,total:rows.length,filled:rows.filter(d=>valid(d.odds)).length,verified:rows.filter(d=>valid(d.odds)&&d.checked).length,unread:rows.filter(d=>!valid(d.odds)).length,format_mismatch:rows.filter(d=>valid(d.odds)&&!d.checked&&currentFormatMismatch(d)).length}]}));
+ return {total,filled:total-missing,image_verified:verified,verified_unchanged:confirmed,verified_corrected:corrected,verified_legacy_unspecified:legacy,ocr_reference_unverified:ref,unread:missing,format_mismatch:mismatch,needs_review:review,four_digit_high_confidence_unverified:four,by_type:by};
+}
+function recordAuditAction(d,from,to,kind){
+ auditHistory.push({time:new Date().toISOString(),bet_type:label(d.id),combination:d.key,previous:String(from||''),result:String(to||''),action:kind,source:/確認|修正|照合取消/.test(kind)?'ユーザーの元画像目視':'手動入力（未照合）'});
+ if(auditHistory.length>1000)auditHistory=auditHistory.slice(-1000);
+}
+function invalidateRecalc(){dataRevision++;recalcSnapshot=null;updateRecalcUI();}
+function updateRecalcUI(){
+ const ready=!!recalcSnapshot;
+ for(const id of ['recalcCopy','recalcTxt','recalcJson']){const el=$(id);if(el)el.disabled=!ready;}
+ if(!ready){
+  $('recalcOutput').value='';$('recalcStats').replaceChildren();$('recalcComparison').textContent='';
+  $('recalcStatus').textContent=data.length===185?'保存内容が更新されました。最新データを出すには「保存済みデータから再集計」を押してください。':'未集計。解析または保存済み監査の再開後に再集計できます。';
+  return;
+ }
+ const r=recalcSnapshot,s=r.summary;
+ $('recalcStatus').textContent=`✅ 再集計完了：${new Date(r.at).toLocaleString('ja-JP')} ／ 全185件 ／ 画像照合済 ${s.image_verified}件（修正 ${s.verified_corrected}・変更なし ${s.verified_unchanged}・旧版由来 ${s.verified_legacy_unspecified||0}） ／ 再OCRなし`;
+ const cells=[['画像照合済',s.image_verified],['OCR参考・未照合',s.ocr_reference_unverified],['未読・要確認',s.unread+s.format_mismatch],['修正済み',s.verified_corrected]];
+ $('recalcStats').innerHTML=cells.map(([name,n])=>`<div class="stat">${name}<strong>${n}</strong></div>`).join('');
+ const before=r.before;
+ const delta=(field)=>{const num=s[field]-Number(before[field]||0);return (num>0?'+':'')+num};
+ $('recalcComparison').textContent=`比較対象：${r.basis}\n画像照合済 ${before.image_verified} → ${s.image_verified}（${delta('image_verified')}件）\n未読・保留 ${before.unread} → ${s.unread}（${delta('unread')}件）\n変更なし確認 ${before.verified_unchanged||0} → ${s.verified_unchanged} ／ 修正済 ${before.verified_corrected||0} → ${s.verified_corrected}\n要確認 ${before.needs_review} → ${s.needs_review} ／ 形式不一致 ${before.format_mismatch} → ${s.format_mismatch}`;
+ $('recalcOutput').value=r.text;
+}
+function getSavedRowsForRecalc(){
+ // Recalc must be reproducible from a successfully saved snapshot.
+ const raw=localStorage.getItem(SAVE_KEY);if(!raw)throw Error('端末に監査データがありません。先に「進捗を保存」を押してね。');
+ const snap=JSON.parse(raw);
+ if(!snap||!Array.isArray(snap.rows)||snap.rows.length!==185)throw Error('保存データの件数が185件ではありません。');
+ if(snap.identity!==identity())throw Error('保存済みデータのレース情報と画面が一致しません。');
+ const indexed=new Map(snap.rows.map(d=>[d.id+'|'+d.key,d]));
+ if(indexed.size!==185||data.some(d=>!indexed.has(auditKey(d))))throw Error('保存データの券種・組合せが一致しません。');
+ return indexed;
+}
+function generateRecalc(){
+ if(data.length!==185||isRunning){$('recalcStatus').textContent='⚠ OCR解析が終了して185件揃ってから再集計してね。';return;}
+ if(!saveProgress()){$('recalcStatus').textContent='⚠ 端末保存に失敗しました。再集計は実行しません。';return;}
+ let saved;
+ try{saved=getSavedRowsForRecalc()}catch(e){$('recalcStatus').textContent='⚠ '+e.message;return;}
+ // Safety: compare the saved 185 values with current values; never silently use a stale snapshot.
+ if(data.some(d=>{const r=saved.get(auditKey(d));return String(r.odds||'')!==String(d.odds||'')||!!r.checked!==!!d.checked})){
+  $('recalcStatus').textContent='⚠ 保存値と表示値が一致しません。進捗保存を確認してね。';return;
+ }
+ const summary=calculateAuditStats();
+ const before=previousRecalcStats||initialStats||{...summary,by_type:summary.by_type};
+ const basis=previousRecalcStats?'前回の再集計':'初回OCR・監査開始時点';
+ const detailed=prePredictionPayload();
+ const rows=detailed.odds.map((o,i)=>({...o,verification_action:data[i].verificationKind||null,verified_at:data[i].verifiedAt||null}));
+ const latestHistory=auditHistory.filter(h=>/確認|修正|照合取消/.test(h.action));
+ const record={version:'2.19.3',phase:'データ分析・要約室への最新再集計',at:new Date().toISOString(),basis,meta:{url:$('url').value,venue:$('venue').value||'不明',race:$('race').value||'不明',date:$('date').value||'不明',screenshot_time:$('time').value||'不明'},summary,comparison:before,events:latestHistory,source_policy:'元スクショが正本。目視確認のないOCRは参考。推測で補正しない。',odds:rows};
+ const headings=['券種','組合せ','倍率（未照合は参考値）','分類','目視操作','目視確認日時','OCR候補'];
+ const body=rows.map(x=>[x.bet_type,x.combination,x.odds===null?'未読':x.odds,x.classification,x.verification_action||'未照合',x.verified_at||'-',(x.ocr_candidates||[]).join('/')||'なし'].join('\t')).join('\n');
+ const history=latestHistory.map(x=>`${x.time}\t${x.bet_type} ${x.combination}\t${x.action}\t${x.previous||'未読'} → ${x.result||'未読'}`).join('\n')||'なし';
+ const text=`【競艇オッズ監査 v2.19.3｜保存データ再集計｜全185通り】\n再集計日時：${new Date(record.at).toLocaleString('ja-JP')}\n開催場：${record.meta.venue} / ${record.meta.race} / ${record.meta.date}\nスクショ時刻：${record.meta.screenshot_time}\n公式URL：${record.meta.url||'未設定'}\n元画像正本。URLはレース識別用。再OCRは行っていません。\n総件数：${summary.total}／画像照合済：${summary.image_verified}（変更なし確認：${summary.verified_unchanged}、修正済：${summary.verified_corrected}、旧版の種別不明：${summary.verified_legacy_unspecified}）／OCR参考・未照合：${summary.ocr_reference_unverified}／未読：${summary.unread}／画像形式との不一致：${summary.format_mismatch}／要確認対象：${summary.needs_review}\n比較（${basis}）：画像照合済 ${before.image_verified||0} → ${summary.image_verified}、未読 ${before.unread||0} → ${summary.unread}、要確認 ${before.needs_review||0} → ${summary.needs_review}\n券種別：${groups.map(([id,n])=>`${n} ${summary.by_type[id].filled}/${summary.by_type[id].total}（目視照合済 ${summary.by_type[id].verified}）`).join(' / ')}\n【重要】目視確認していないOCRの倍率は参考値であり確定値ではありません。元画像の数字形式と矛盾する未照合値は「未読」として出力。データ分析・要約室で不足監査を行ってください。\n\n${headings.join('\t')}\n${body}\n\n【照合・修正履歴（ユーザーが目視確認した操作）】\n日時\t対象\t操作\t前 → 後\n${history}`;
+ recalcSnapshot={at:record.at,basis,summary,before,record,text};
+ previousRecalcStats=summary;
+ // Save the materialized report and its revision for session recovery.
+ const ok=saveProgress();if(!ok){recalcSnapshot=null;updateRecalcUI();$('recalcStatus').textContent='⚠ 再集計結果を端末に保存できませんでした。';return;}
+ updateRecalcUI();$('recalcPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('recalcButton').onclick=generateRecalc;
+$('recalcCopy').onclick=async()=>{if(!recalcSnapshot)return;try{if(!navigator.clipboard?.writeText)throw Error('unsupported');await navigator.clipboard.writeText(recalcSnapshot.text);$('recalcCopyMsg').textContent='✅ 再集計済み185通りをコピーしました。'}catch(e){$('recalcOutput').focus();$('recalcOutput').select();$('recalcCopyMsg').textContent='コピーが制限されています。テキストを長押ししてコピーしてね。'}};
+$('recalcTxt').onclick=()=>{if(recalcSnapshot)save('boat_odds_recalculated_v2_19_3.txt',recalcSnapshot.text,'text/plain;charset=utf-8')};
+$('recalcJson').onclick=()=>{if(recalcSnapshot)save('boat_odds_recalculated_v2_19_3.json',JSON.stringify(recalcSnapshot.record,null,2),'application/json;charset=utf-8')};
+
+const oldRender27=render;render=function(){oldRender27();updatePreOutput()};
+$('url').addEventListener('input',updatePreOutput);$('time').addEventListener('input',updatePreOutput);
+updatePreOutput();
+</script></body></html>
